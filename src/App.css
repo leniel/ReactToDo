@@ -101,3 +101,10 @@ input[type=checkbox] {
 input[type=checkbox]:focus {
   outline: 0;
 }
+
+.login-status
+{
+  color:orange;
+  display: flex;
+  text-align: left;
+}

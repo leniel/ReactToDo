@@ -21,12 +21,21 @@ import Footer from './components/Footer';
 
 class App extends React.Component
 {
+  constructor()
+  {
+    super()
+
+    this.state = {
+      isLoggedIn: "false"
+    }
+  }
+
   render()
   {
     return (
       <div className="App">
 
-        <Header />
+        <Header loggedIn={this.state.isLoggedIn}/>
 
         <Main />
 
