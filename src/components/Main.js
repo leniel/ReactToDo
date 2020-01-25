@@ -1,21 +1,23 @@
-import React from 'react';
-import ToDo from './TodoItem';
+import React, { Component } from 'react';
 import TodoItem from './TodoItem';
 import TodoData from '../data/todosData';
 
-function Main()
+class Main extends Component
 {
-    const todos = TodoData.map(todo => <TodoItem key={todo.id} item={todo} />)
-    
-    return (
-        <main className="Main">
+    render()
+    {
+        const todos = TodoData.map(todo => <TodoItem key={todo.id} item={todo} />)
 
-            <div class="todo-list">
-                {todos}
-            </div>
+        return (
+            <main className="Main">
 
-        </main>
-    )
+                <div class="todo-list">
+                    {todos}
+                </div>
+
+            </main>
+        )
+    }
 }
 
 export default Main;
