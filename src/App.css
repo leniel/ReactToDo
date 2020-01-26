@@ -2,6 +2,10 @@ body{
   margin:0;
 }
 
+p{
+  margin-bottom: 0;
+}
+
 .Main {
   flex: 1 0 auto;
   min-height: auto;
@@ -58,6 +62,8 @@ body{
   justify-content: center;
 }
 
+/* #region Todo List */
+
 .todo-list {
   background-color: white;
   margin: auto;
@@ -84,8 +90,9 @@ body{
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  padding: 30px 20px 0;
+  /* padding: 30px 20px 0; */
   width: 70%;
+  height: 50px;
   border-bottom: 1px solid #cecece;
   font-family: Roboto, sans-serif;
   font-weight: 100;
@@ -101,6 +108,8 @@ input[type=checkbox] {
 input[type=checkbox]:focus {
   outline: 0;
 }
+
+/*#endregion Todo */
 
 .login-status
 {
