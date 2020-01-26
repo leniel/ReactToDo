@@ -20,9 +20,18 @@ namespace TodoApi.Controllers
 
         // GET: api/TodoItems
         [HttpGet]
+        [Route("")]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
             return await _context.TodoItems.ToListAsync();
+        }
+
+
+        [HttpGet]
+        [Route("Count")]
+        public async Task<ActionResult<long>> GetTodoItemsCount()
+        {
+            return await _context.TodoItems.LongCountAsync();
         }
 
         // GET: api/TodoItems/5

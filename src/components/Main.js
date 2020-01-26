@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import TodoItem from './TodoItem';
-import todosData from '../data/todosData';
+import TodoList from './TodoList';
 
 class Main extends Component
 {
@@ -9,43 +8,52 @@ class Main extends Component
         super()
 
         this.state = {
-            todos: todosData
+            loading: false
         }
 
         this.handleChange = this.handleChange.bind(this)
     }
 
+    bootstrapData()
+    {
+        this.setState({
+            loading: true
+        })
+    }
+
     handleChange(id)
     {
-        console.log('Changed', id)
+        // console.log('Changed', id)
 
-        this.setState(prevState =>
-        {
-            const updatedTodos = prevState.todos.map(todo =>
-            {
-                if (todo.id === id)
-                {
-                    todo.completed = !todo.completed
-                }
+        // this.setState(prevState =>
+        // {
+        //     const updatedTodos = prevState.todos.map(todo =>
+        //     {
+        //         if (todo.id === id)
+        //         {
+        //             todo.completed = !todo.completed
+        //         }
 
-                return todo
-            })
+        //         return todo
+        //     })
 
-            return {
-                todos: updatedTodos
-            }
-        })
+        //     return {
+        //         todos: updatedTodos
+        //     }
+        // })
     }
 
     render()
     {
-        const todos = this.state.todos.map(todo => <TodoItem key={todo.id} item={todo} handleChange={this.handleChange} />)
+        // const todos = this.state.todos.map(todo => <TodoItem key={todo.id} item={todo} handleChange={this.handleChange} />)
 
         return (
             <main className="Main">
 
                 <div class="todo-list">
-                    {todos}
+
+                    <TodoList />
+
                 </div>
 
             </main>

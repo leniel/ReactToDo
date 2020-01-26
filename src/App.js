@@ -21,29 +21,31 @@ import Footer from './components/Footer';
 
 class App extends React.Component
 {
-  constructor()
-  {
-    super()
+    constructor()
+    {
+        super()
 
-    this.state = {
-      isLoggedIn: "false"
+        this.state = {
+            isLoggedIn: "false"
+        }
     }
-  }
 
-  render()
-  {
-    return (
-      <div className="App">
+    render()
+    {
+        return (
+            <div className="App">
 
-        <Header loggedIn={this.state.isLoggedIn}/>
+                <Header
+                // loggedIn={this.state.isLoggedIn}
+                />
 
-        <Main />
+                <Main />
 
-        <Footer />
+                <Footer />
 
-      </div>
-    )
-  }
+            </div>
+        )
+    }
 }
 
 export default App;
