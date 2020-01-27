@@ -1,55 +1,83 @@
 import React, { Component } from "react"
-import TodoItem from "./TodoItem"
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { Form, Input, Datepicker, Select, SubmitBtn } from 'react-formik-ui';
 
-export default class TodoForm extends Component
+const TodoForm = () =>
 {
-    constructor(props)
-    {
-        super(props);
+    return (
+        <Formik
+            initialValues={{ name: '', dueDate: '', priority: '' }}
+            validationSchema={Yup.object({
+                name:
+                    Yup.string()
+                        .max(30, 'Must be 30 characters or less')
+                        .required('Required'),
+                dueDate:
+                    Yup.date()
+                        .required('Required'),
+                priority:
+                    Yup.number()
+                        .required('Required')
+            })}
+            onSubmit={(values, { setSubmitting }) =>
+            {
+                values.dueDate = values.dueDate.toISOString()
+                values.priority = parseInt(values.priority)
 
-        this.state = {
-            name: "",
-            completed: false
-        }
+                //alert(JSON.stringify(values, null, 2));
 
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
+                fetch(window.configs.webAPIUrl + "TodoItems", {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(values)
+                }).catch(error => console.error('Unable to add item.', error));
 
-    handleChange = event =>
-    {
-        this.setState({
-            [event.target.name]: event.target.value
-        })
-    }
+                setSubmitting(false)
+            }}
+        >
 
-    handleSubmit = event =>
-    {
-        event.preventDefault();
+            <Form mode='themed'>
 
-        // alert('Todo submitted: ' + this.state.name);
-
-        this.props.onSubmit({
-            name: this.state.name,
-            completed: false
-        });
-
-        this.setState({
-            name: ""
-        });
-    };
-
-    render()
-    {
-        return (
-            <form onSubmit={this.handleSubmit}>
-                <input
-                    name="name"
-                    value={this.state.name}
-                    onChange={this.handleChange}
-                    placeholder="todo..."
+                <Input
+                    name='name'
+                    label='Todo'
+                    hint=''
                 />
-                <button onClick={this.handleSubmit}>Add todo</button>
-            </form>
-        )
-    }
-}
+
+                <Datepicker
+                    name='dueDate'
+                    label='Due date'
+                    dateFormat='MM/dd/yyyy HH:mm'
+                    placeholder=''
+                    hint=''
+                    minDate={new Date()}
+                    timeIntervals="1"
+                    showTimeSelect={true}
+                />
+
+                <Select
+                    name='priority'
+                    label='Priority'
+                    placeholder='Select a priority'
+                    options={[
+                        { value: 0, label: 'Low' },
+                        { value: 1, label: 'Normal' },
+                        { value: 2, label: 'High' }
+                    ]}
+                />
+
+                <SubmitBtn className="btn btn-primary">
+                    Save
+                </SubmitBtn>
+
+            </Form>
+
+        </Formik>
+    );
+};
+
+export default TodoForm
