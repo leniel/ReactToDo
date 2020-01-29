@@ -1,83 +1,149 @@
-import React, { Component } from "react"
-import { Formik } from 'formik';
+import React, { useState } from "react"
 import * as Yup from 'yup';
-import { Form, Input, Datepicker, Select, SubmitBtn } from 'react-formik-ui';
+import { FormControl, Button, MenuItem, LinearProgress, InputLabel, TextField } from '@material-ui/core';
+import Container from '@material-ui/core/Container';
+import { Formik, Form, Field } from 'formik';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { DateTimePicker, DatePicker } from "@material-ui/pickers";
 
-const TodoForm = () =>
+function TodoForm()
 {
+    const priority = [
+        {
+            value: 0,
+            label: "Low"
+        },
+        {
+            value: 1,
+            label: "Normal"
+        },
+        {
+            value: 2,
+            label: "High"
+        }
+    ];
+
     return (
-        <Formik
-            initialValues={{ name: '', dueDate: '', priority: '' }}
-            validationSchema={Yup.object({
-                name:
-                    Yup.string()
-                        .max(30, 'Must be 30 characters or less')
-                        .required('Required'),
-                dueDate:
-                    Yup.date()
-                        .required('Required'),
-                priority:
-                    Yup.number()
-                        .required('Required')
-            })}
-            onSubmit={(values, { setSubmitting }) =>
-            {
-                values.dueDate = values.dueDate.toISOString()
-                values.priority = parseInt(values.priority)
 
-                //alert(JSON.stringify(values, null, 2));
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Formik
+                validateOnMount={false} // Can validate the form up front with true
+                initialValues={{ name: '', duedate: new Date(), priority: '' }}
 
-                fetch(window.configs.webAPIUrl + "TodoItems", {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(values)
-                }).catch(error => console.error('Unable to add item.', error));
+                validationSchema={Yup.object({
+                    name:
+                        Yup.string()
+                            .max(30, 'Must be 30 characters or less')
+                            .required('Required'),
+                    duedate:
+                        Yup.date()
+                            .required('Required'),
+                    priority:
+                        Yup.number()
+                            .required('Required')
+                })}
 
-                setSubmitting(false)
-            }}
-        >
+                onSubmit={(values, { setSubmitting, resetForm }) =>
+                {
+                    debugger;
 
-            <Form mode='themed'>
+                    //values.priority = parseInt(values.priority)
 
-                <Input
-                    name='name'
-                    label='Todo'
-                    hint=''
-                />
+                    //alert(JSON.stringify(values, null, 2));
 
-                <Datepicker
-                    name='dueDate'
-                    label='Due date'
-                    dateFormat='MM/dd/yyyy HH:mm'
-                    placeholder=''
-                    hint=''
-                    minDate={new Date()}
-                    timeIntervals="1"
-                    showTimeSelect={true}
-                />
+                    // Resets form after submission is complete
+                    resetForm()
+                }}
+            >
+                {props =>
+                {
+                    const { handleChange, values, errors, touched, handleSubmit, submitForm, isSubmitting, setFieldValue } = props;
+                    return (
 
-                <Select
-                    name='priority'
-                    label='Priority'
-                    placeholder='Select a priority'
-                    options={[
-                        { value: 0, label: 'Low' },
-                        { value: 1, label: 'Normal' },
-                        { value: 2, label: 'High' }
-                    ]}
-                />
+                        <Form>
 
-                <SubmitBtn className="btn btn-primary">
-                    Save
-                </SubmitBtn>
+                            <Container component="main" maxWidth="xs" >
 
-            </Form>
+                                <FormControl>
+                                    <TextField
+                                        name='name'
+                                        label='Todo'
+                                        variant="outlined"
+                                        onChange={handleChange("name")}
+                                        helperText="Describe your todo"
+                                        error={errors.name}
+                                        touched={touched.name}
+                                        value={values.name}
+                                    />
+                                </FormControl>
 
-        </Formik>
-    );
-};
+                                <br></br><br></br>
+
+                                <FormControl>
+                                    <TextField
+                                        select
+                                        name="priority"
+                                        id="priority"
+                                        label="Priority"
+                                        margin="dense"
+                                        variant="outlined"
+                                        fullWidth
+                                        onChange={handleChange("priority")}
+                                        helperText="How urgent is this?"
+                                        error={errors.priority}
+                                        touched={touched.priority}
+                                        value={values.priority}
+                                    >
+                                        {priority.map(option => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+
+
+                                </FormControl>
+                                <br></br><br></br>
+                                <FormControl>
+                                    <Field name="duedate"
+                                        label="Due date"
+                                        inputVariant="outlined"
+                                        helperText="When should it be done?"
+                                        disablePast
+                                        component={DateTimePicker}
+                                        value={values.duedate}
+                                        error={errors.duedate}
+                                        touched={touched.duedate}
+                                        onChange={date => setFieldValue("duedate", date.toISOString())} />
+                                </FormControl>
+                                <br></br><br></br>
+
+                                {isSubmitting && <LinearProgress />}
+
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={isSubmitting}
+                                    onClick={submitForm}
+                                >
+                                    Save
+          </Button>
+
+                            </Container>
+
+                            {/* Useful during debugging - it shows all Formik props */}
+                            {/* <pre>{JSON.stringify(props, null, 2)}</pre> */}
+
+                        </Form>
+
+                    );
+                }}
+
+            </Formik>
+
+        </MuiPickersUtilsProvider>
+    )
+}
 
 export default TodoForm

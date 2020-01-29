@@ -1,72 +1,71 @@
 import React, { Component } from 'react';
 import TodoForm from './TodoForm';
 import TodoItem from './TodoItem';
-
-const uri = 'http://localhost:7777/api/';
+import ApiService from "../service/TodoService";
 
 export default class TodoList extends Component
 {
-    state = {
-        todos: [],
-        // todoToShow: "all",
-        // toggleAllComplete: true
+    constructor(props)
+    {
+        super(props)
+
+        this.state = {
+            todos: [],
+            message: null
+        }
+
+        // this.deleteTodo = this.deleteTodo.bind(this);
+        // this.editTodo = this.editTodo.bind(this);
+        this.addTodo = this.addTodo.bind(this);
+        this.reloadTodoList = this.reloadTodoList.bind(this);
     }
 
     componentDidMount()
     {
-        fetch("http://localhost:7777/api/TodoItems")
-            .then(response => response.json())
-            .then(data => 
-            {
-                // debugger;
+        this.reloadTodoList();
+    }
 
-                this.setState(
-                    {
-                        //loading: false,
-                        todos: data
-                    })
-            })
+    reloadTodoList()
+    {
+        //debugger;
+
+        ApiService.getTodos()
+            .then((res) =>
+            {               
+                this.setState({ todos: res.data })
+            });
     }
 
     addTodo = todo =>
     {
-        this.setState(
-            {
-                todos: [todo, ...this.state.todos]
-            }
-        )
+        ApiService.addTodo(todo)
 
-        fetch(uri + "TodoItems", {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(todo)
-        }).catch(error => console.error('Unable to add item.', error));
+        this.reloadTodoList()
     }
 
-    deleteTodo = id =>
-    {
-        this.setState(state => ({
-            todos: state.todos.filter(todo => todo.id !== id)
-        }));
-    };
+    // deleteTodo = id =>
+    // {
+    //     this.setState(state => ({
+    //         todos: state.todos.filter(todo => todo.id !== id)
+    //     }));
+    // };
 
     render()
     {
         return (
-            <div>
-                <TodoForm onSubmit={this.addTodo} />
+            <div className="todo-list">
+
+                <TodoForm />
 
                 {this.state.todos.map(todo => (
                     <TodoItem
                         key={todo.id}
                         toggleComplete={() => this.toggleComplete(todo.id)}
-                        onDelete={() => this.deleteTodo(todo.id)}
+                        // onDelete={() => this.deleteTodo(todo.id)}
                         todo={todo}
                     />
                 ))}
+
             </div>
         )
     }
