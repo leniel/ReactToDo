@@ -9,6 +9,7 @@ p{
 .Main {
   flex: 1 0 auto;
   min-height: auto;
+      padding: 20px 50px;
 }
 
 .App {

@@ -1,11 +1,10 @@
-import React, { useState } from "react"
+import React from "react"
 import * as Yup from 'yup';
-import { FormControl, Button, MenuItem, LinearProgress, InputLabel, TextField } from '@material-ui/core';
-import Container from '@material-ui/core/Container';
+import { Button, MenuItem, LinearProgress, TextField } from '@material-ui/core';
 import { Formik, Form, Field } from 'formik';
 import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { DateTimePicker, DatePicker } from "@material-ui/pickers";
+import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import Grid from '@material-ui/core/Grid';
 
 function TodoForm()
 {
@@ -24,21 +23,26 @@ function TodoForm()
         }
     ];
 
+    const fieldSize = 12
+
     return (
 
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Formik
                 validateOnMount={false} // Can validate the form up front with true
-                initialValues={{ name: '', duedate: new Date(), priority: '' }}
+                validateOnChange={true}
+                validateOnBlur={true}
+                initialValues={{ name: '', dueDate: null, priority: '' }}
 
                 validationSchema={Yup.object({
                     name:
                         Yup.string()
                             .max(30, 'Must be 30 characters or less')
                             .required('Required'),
-                    duedate:
+                    dueDate:
                         Yup.date()
-                            .required('Required'),
+                            .required('Required')
+                            .typeError('Required'),
                     priority:
                         Yup.number()
                             .required('Required')
@@ -63,24 +67,41 @@ function TodoForm()
 
                         <Form>
 
-                            <Container component="main" maxWidth="xs" >
+                            <Grid container direction="column" justify="flex-start" spacing={4}>
 
-                                <FormControl>
+                                <Grid item xl={fieldSize} md={fieldSize} sm={fieldSize} xs={fieldSize}>
                                     <TextField
+                                        autoFocus={true}
+                                        fullWidth
                                         name='name'
                                         label='Todo'
                                         variant="outlined"
                                         onChange={handleChange("name")}
-                                        helperText="Describe your todo"
+                                        helperText={errors.name ? errors.name : "Describe your todo"}
                                         error={errors.name}
                                         touched={touched.name}
                                         value={values.name}
                                     />
-                                </FormControl>
+                                </Grid>
 
-                                <br></br><br></br>
+                                <Grid item xl={fieldSize} md={fieldSize} sm={fieldSize} xs={fieldSize}>
+                                    <Field
+                                        name="dueDate"
+                                        label="Due date"
+                                        inputVariant="outlined"
+                                        helperText={errors.dueDate ? errors.dueDate : "When should it be done?"}
+                                        disablePast
+                                        clearable
+                                        fullWidth
+                                        component={DateTimePicker}
+                                        value={values.dueDate}
+                                        error={errors.dueDate}
+                                        touched={touched.dueDate}
+                                        onChange={date => setFieldValue("dueDate", date.toISOString())} />
+                                </Grid>
 
-                                <FormControl>
+
+                                <Grid item xl={fieldSize} md={fieldSize} sm={fieldSize} xs={fieldSize}>
                                     <TextField
                                         select
                                         name="priority"
@@ -90,7 +111,7 @@ function TodoForm()
                                         variant="outlined"
                                         fullWidth
                                         onChange={handleChange("priority")}
-                                        helperText="How urgent is this?"
+                                        helperText={errors.priority ? errors.priority : "How urgent is this?"}
                                         error={errors.priority}
                                         touched={touched.priority}
                                         value={values.priority}
@@ -102,35 +123,25 @@ function TodoForm()
                                         ))}
                                     </TextField>
 
+                                </Grid>
 
-                                </FormControl>
-                                <br></br><br></br>
-                                <FormControl>
-                                    <Field name="duedate"
-                                        label="Due date"
-                                        inputVariant="outlined"
-                                        helperText="When should it be done?"
-                                        disablePast
-                                        component={DateTimePicker}
-                                        value={values.duedate}
-                                        error={errors.duedate}
-                                        touched={touched.duedate}
-                                        onChange={date => setFieldValue("duedate", date.toISOString())} />
-                                </FormControl>
-                                <br></br><br></br>
+                                <Grid item xl={fieldSize}
+                                    md={fieldSize}
+                                    sm={fieldSize}
+                                    xs={fieldSize}
+                                    align="center" justify="center">
 
-                                {isSubmitting && <LinearProgress />}
+                                    {isSubmitting && <LinearProgress />}
 
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    disabled={isSubmitting}
-                                    onClick={submitForm}
-                                >
-                                    Save
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        disabled={isSubmitting}
+                                        onClick={submitForm}
+                                    >
+                                        Save
           </Button>
-
-                            </Container>
+                                </Grid> </Grid>
 
                             {/* Useful during debugging - it shows all Formik props */}
                             {/* <pre>{JSON.stringify(props, null, 2)}</pre> */}

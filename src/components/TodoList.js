@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import TodoForm from './TodoForm';
 import TodoItem from './TodoItem';
 import ApiService from "../service/TodoService";
 
@@ -31,7 +30,7 @@ export default class TodoList extends Component
 
         ApiService.getTodos()
             .then((res) =>
-            {               
+            {
                 this.setState({ todos: res.data })
             });
     }
@@ -53,20 +52,22 @@ export default class TodoList extends Component
     render()
     {
         return (
-            <div className="todo-list">
 
-                <TodoForm />
+            <>
 
-                {this.state.todos.map(todo => (
-                    <TodoItem
-                        key={todo.id}
-                        toggleComplete={() => this.toggleComplete(todo.id)}
-                        // onDelete={() => this.deleteTodo(todo.id)}
-                        todo={todo}
-                    />
-                ))}
+                <div className="todo-list">
+                    {this.state.todos.map(todo => (
+                        <TodoItem
+                            key={todo.id}
+                            toggleComplete={() => this.toggleComplete(todo.id)}
+                            // onDelete={() => this.deleteTodo(todo.id)}
+                            todo={todo}
+                        />
+                    ))}
+                </div>
 
-            </div>
+            </>
+
         )
     }
 }

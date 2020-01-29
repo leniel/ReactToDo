@@ -1,64 +1,55 @@
 import React, { Component } from 'react';
 import TodoList from './TodoList';
+import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import TodoForm from './TodoForm';
 
-class Main extends Component
+const useStyles = makeStyles(theme => ({
+    root: {
+        flexGrow: 1,
+    },
+    paper: {
+        padding: theme.spacing(2),
+        color: theme.palette.text.secondary,
+    },
+    control: {
+        padding: theme.spacing(0),
+    },
+}));
+
+export default function Main()
 {
-    constructor()
-    {
-        super()
+    const [spacing, setSpacing] = React.useState(2);
+    const classes = useStyles();
 
-        this.state = {
-            loading: false
-        }
+    // const todos = this.state.todos.map(todo => <TodoItem key={todo.id} item={todo} handleChange={this.handleChange} />)
 
-        this.handleChange = this.handleChange.bind(this)
-    }
+    return (
 
-    bootstrapData()
-    {
-        this.setState({
-            loading: true
-        })
-    }
+        <main className="Main">
 
-    handleChange(id)
-    {
-        // console.log('Changed', id)
+            <Grid container className={classes.root} spacing={5}>
+                <Grid container>
+                    <Grid container justify="center" spacing={spacing}>
+                        <Grid item xs={4}>
+                                <Paper className={classes.paper}>
+                                    <TodoForm />
+                                </Paper>
+                        </Grid>
+                        
+                        <Grid item xs={4}>
+                            <Paper className={classes.paper}>
+                                <TodoList />
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
 
-        // this.setState(prevState =>
-        // {
-        //     const updatedTodos = prevState.todos.map(todo =>
-        //     {
-        //         if (todo.id === id)
-        //         {
-        //             todo.completed = !todo.completed
-        //         }
+            {/* <TodoList /> */}
 
-        //         return todo
-        //     })
+        </main>
 
-        //     return {
-        //         todos: updatedTodos
-        //     }
-        // })
-    }
-
-    render()
-    {
-        // const todos = this.state.todos.map(todo => <TodoItem key={todo.id} item={todo} handleChange={this.handleChange} />)
-
-        return (
-            <main className="Main">
-
-                <div class="todo-list">
-
-                    <TodoList />
-
-                </div>
-
-            </main>
-        )
-    }
+    )
 }
-
-export default Main;
