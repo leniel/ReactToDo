@@ -55,7 +55,7 @@ class Main extends Component
 
             <main className="Main">
 
-                <Grid container spacing={5}>
+                <Grid container>
                     <Grid container>
                         <Grid container justify="center" spacing={2}>
                             <Grid item xs={4}>
@@ -64,7 +64,7 @@ class Main extends Component
                                 </Paper>
                             </Grid>
                         
-                            <Grid item xs={4}>
+                            <Grid item xs={5}>
                                 <Paper>
                                     <TodoList todos={todos}/>
                                 </Paper>
