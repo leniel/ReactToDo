@@ -39,12 +39,30 @@ class Main extends Component
                 console.log('Todo saved', 2, res)
 
                 let { todos } = this.state;
-                
+
                 todos.push(res.data);
 
                 this.setState({ todos: todos });
             }
         )
+    }
+
+    deleteTodo = ids =>
+    {
+        console.log('ids to be deleted', ids)
+
+        ids.map(id =>
+        {
+            ApiService.deleteTodo(id).then
+                (res =>
+                {
+                    let { todos } = this.state;
+
+                    todos.pop(res.data);
+
+                    this.setState({ todos: todos });
+            })
+        })
     }
 
     render()
@@ -55,21 +73,17 @@ class Main extends Component
 
             <main className="Main">
 
-                <Grid container>
-                    <Grid container>
-                        <Grid container justify="center" spacing={2}>
-                            <Grid item xs={4}>
-                                <Paper>
-                                    <TodoForm onSubmit={this.addTodo}/>
-                                </Paper>
-                            </Grid>
-                        
-                            <Grid item xs={5}>
-                                <Paper>
-                                    <TodoList todos={todos}/>
-                                </Paper>
-                            </Grid>
-                        </Grid>
+                <Grid container justify="center" alignItems="center" spacing={2} xs={12}>
+                    <Grid item xs={4}>
+                        <Paper>
+                            <TodoForm onSubmit={this.addTodo} />
+                        </Paper>
+                    </Grid>
+
+                    <Grid item xs={5}>
+                        <Paper>
+                            <TodoList todos={todos} deleteTodo={this.deleteTodo} />
+                        </Paper>
                     </Grid>
                 </Grid>
 

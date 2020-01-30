@@ -13,6 +13,14 @@ export default class TodoList extends Component
         
     }
 
+    deleteTodo()
+    {
+        console.log('hey jude')
+        //alert(todo)
+
+        //console.log(todo)
+    }
+
     render()
     {
         return (
@@ -29,7 +37,7 @@ export default class TodoList extends Component
                         />
                     ))} */}
 
-                    <EnhancedTable todos={this.props.todos} />
+                    <EnhancedTable todos={this.props.todos} deleteTodo={this.props.deleteTodo} />
 
                 {/* </div> */}
 

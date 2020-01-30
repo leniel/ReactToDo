@@ -21,11 +21,7 @@ import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import moment from 'moment'
-
-function createData(name, calories, fat, carbs, protein)
-{
-    return { name, calories, fat, carbs, protein };
-}
+import { priority } from './constants'
 
 function desc(a, b, orderBy)
 {
@@ -142,9 +138,12 @@ const useToolbarStyles = makeStyles(theme => ({
 const EnhancedTableToolbar = props =>
 {
     const classes = useToolbarStyles();
-    const { numSelected } = props;
+    const { numSelected, selected, deleteTodo } = props;
+
+    // console.log(selected)
 
     return (
+
         <Toolbar
             className={clsx(classes.root, {
                 [classes.highlight]: numSelected > 0,
@@ -162,8 +161,8 @@ const EnhancedTableToolbar = props =>
 
             {numSelected > 0 ? (
                 <Tooltip title="Delete">
-                    <IconButton aria-label="delete">
-                        <DeleteIcon />
+                    <IconButton aria-label="delete" onClick={() => props.deleteTodo(selected)}>
+                        <DeleteIcon/>
                     </IconButton>
                 </Tooltip>
             ) : (
@@ -236,14 +235,14 @@ export default function EnhancedTable(props)
         setSelected([]);
     };
 
-    const handleClick = (event, name) =>
+    const handleClick = (event, id) =>
     {
-        const selectedIndex = selected.indexOf(name);
+        const selectedIndex = selected.indexOf(id);
         let newSelected = [];
 
         if (selectedIndex === -1)
         {
-            newSelected = newSelected.concat(selected, name);
+            newSelected = newSelected.concat(selected, id);
         } else if (selectedIndex === 0)
         {
             newSelected = newSelected.concat(selected.slice(1));
@@ -278,7 +277,7 @@ export default function EnhancedTable(props)
         setDense(event.target.checked);
     };
 
-    const isSelected = name => selected.indexOf(name) !== -1;
+    const isSelected = id => selected.indexOf(id) !== -1;
 
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, props.todos.length - page * rowsPerPage);
 
@@ -286,7 +285,7 @@ export default function EnhancedTable(props)
         
         <div className={classes.root}>
             <Paper className={classes.paper}>
-                <EnhancedTableToolbar numSelected={selected.length} />
+                <EnhancedTableToolbar numSelected={selected.length} selected={selected} deleteTodo={props.deleteTodo} />
                 <TableContainer>
                     <Table
                         className={classes.table}
@@ -309,18 +308,18 @@ export default function EnhancedTable(props)
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) =>
                                 {
-                                    const isItemSelected = isSelected(row.name);
+                                    const isItemSelected = isSelected(row.id);
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={event => handleClick(event, row.name)}
+                                            onClick={event => handleClick(event, row.id)}
                                             role="checkbox"
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
-                                            key={row.name}
                                             selected={isItemSelected}
+                                            key={row.id}
                                         >
                                             <TableCell padding="checkbox">
                                                 <Checkbox
@@ -330,7 +329,7 @@ export default function EnhancedTable(props)
                                             </TableCell>
                                             <TableCell component="th" id={labelId} scope="row" padding="none">{row.name}</TableCell>
                                             <TableCell align="right">{moment(row.dueDate).format('MM/DD/YYYY h:mm a')}</TableCell>
-                                            <TableCell align="right">{row.priority}</TableCell>
+                                            <TableCell align="right">{priority.map(p => p.value === row.priority ? p.label : null)}</TableCell>
                                         </TableRow>
                                     );
                                 })}

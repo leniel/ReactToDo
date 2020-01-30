@@ -5,24 +5,10 @@ import { Formik, Form, Field } from 'formik';
 import DateFnsUtils from '@date-io/date-fns';
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Grid from '@material-ui/core/Grid';
+import { priority } from './constants'
 
 export default function TodoForm(props)
 {
-    const priority = [
-        {
-            value: 0,
-            label: "Low"
-        },
-        {
-            value: 1,
-            label: "Normal"
-        },
-        {
-            value: 2,
-            label: "High"
-        }
-    ];
-
     const fieldSize = 12
 
     return (

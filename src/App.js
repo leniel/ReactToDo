@@ -9,8 +9,13 @@ const theme = createMuiTheme({
     overrides: {
         MuiPaper: {
             root: {
-                padding: 16,
-                marginBottom: 16
+                paddingLeft: 16,
+                paddingRight: 16
+            },
+        },
+        MuiAppBar: {
+            root: {
+                marginBottom: 32
             },
         },
     },
