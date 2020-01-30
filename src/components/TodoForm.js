@@ -6,7 +6,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Grid from '@material-ui/core/Grid';
 
-function TodoForm()
+export default function TodoForm(props)
 {
     const priority = [
         {
@@ -50,11 +50,11 @@ function TodoForm()
 
                 onSubmit={(values, { setSubmitting, resetForm }) =>
                 {
-                    debugger;
-
                     //values.priority = parseInt(values.priority)
 
                     //alert(JSON.stringify(values, null, 2));
+
+                    props.onSubmit(values)
 
                     // Resets form after submission is complete
                     resetForm()
@@ -77,7 +77,7 @@ function TodoForm()
                                         label='Todo'
                                         variant="outlined"
                                         onChange={handleChange("name")}
-                                        helperText={errors.name ? errors.name : "Describe your todo"}
+                                        helperText={errors.name ? errors.name : "What should be done?"}
                                         error={errors.name}
                                         touched={touched.name}
                                         value={values.name}
@@ -97,7 +97,7 @@ function TodoForm()
                                         value={values.dueDate}
                                         error={errors.dueDate}
                                         touched={touched.dueDate}
-                                        onChange={date => setFieldValue("dueDate", date.toISOString())} />
+                                        onChange={date => date && setFieldValue("dueDate", date.toISOString())} />
                                 </Grid>
 
 
@@ -111,7 +111,7 @@ function TodoForm()
                                         variant="outlined"
                                         fullWidth
                                         onChange={handleChange("priority")}
-                                        helperText={errors.priority ? errors.priority : "How urgent is this?"}
+                                        helperText={errors.priority ? errors.priority : "How urgent is it?"}
                                         error={errors.priority}
                                         touched={touched.priority}
                                         value={values.priority}
@@ -132,7 +132,7 @@ function TodoForm()
                                     align="center" justify="center">
 
                                     {isSubmitting && <LinearProgress />}
-
+                                    <br></br>
                                     <Button
                                         variant="contained"
                                         color="primary"
@@ -141,7 +141,8 @@ function TodoForm()
                                     >
                                         Save
           </Button>
-                                </Grid> </Grid>
+                                </Grid>
+                            </Grid>
 
                             {/* Useful during debugging - it shows all Formik props */}
                             {/* <pre>{JSON.stringify(props, null, 2)}</pre> */}
@@ -156,5 +157,3 @@ function TodoForm()
         </MuiPickersUtilsProvider>
     )
 }
-
-export default TodoForm

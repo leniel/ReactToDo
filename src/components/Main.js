@@ -1,55 +1,81 @@
 import React, { Component } from 'react';
 import TodoList from './TodoList';
-import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import TodoForm from './TodoForm';
+import ApiService from "../service/TodoService";
+import { withTheme } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        flexGrow: 1,
-    },
-    paper: {
-        padding: theme.spacing(2),
-        color: theme.palette.text.secondary,
-    },
-    control: {
-        padding: theme.spacing(0),
-    },
-}));
-
-export default function Main()
+class Main extends Component
 {
-    const [spacing, setSpacing] = React.useState(2);
-    const classes = useStyles();
+    constructor(props)
+    {
+        super(props)
 
-    // const todos = this.state.todos.map(todo => <TodoItem key={todo.id} item={todo} handleChange={this.handleChange} />)
+        this.state = { todos: [] };
+    }
 
-    return (
+    async componentDidMount()
+    {
+        this.reloadTodoList()
+    }
 
-        <main className="Main">
+    reloadTodoList()
+    {
+        //debugger;
 
-            <Grid container className={classes.root} spacing={5}>
-                <Grid container>
-                    <Grid container justify="center" spacing={spacing}>
-                        <Grid item xs={4}>
-                                <Paper className={classes.paper}>
-                                    <TodoForm />
+        ApiService.getTodos()
+            .then((res) =>
+            {
+                this.setState({ todos: res.data })
+            });
+    }
+
+    addTodo = todo =>
+    {
+        ApiService.addTodo(todo).then(
+            res =>
+            {
+                console.log('Todo saved', 2, res)
+
+                let { todos } = this.state;
+                
+                todos.push(res.data);
+
+                this.setState({ todos: todos });
+            }
+        )
+    }
+
+    render()
+    {
+        let { todos } = this.state;
+
+        return (
+
+            <main className="Main">
+
+                <Grid container spacing={5}>
+                    <Grid container>
+                        <Grid container justify="center" spacing={2}>
+                            <Grid item xs={4}>
+                                <Paper>
+                                    <TodoForm onSubmit={this.addTodo}/>
                                 </Paper>
-                        </Grid>
+                            </Grid>
                         
-                        <Grid item xs={4}>
-                            <Paper className={classes.paper}>
-                                <TodoList />
-                            </Paper>
+                            <Grid item xs={4}>
+                                <Paper>
+                                    <TodoList todos={todos}/>
+                                </Paper>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
 
-            {/* <TodoList /> */}
-
-        </main>
-
-    )
+            </main>
+        )
+    }
 }
+
+export default withTheme(Main);

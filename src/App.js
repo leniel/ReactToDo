@@ -3,6 +3,24 @@ import './App.css';
 import Header from './components/Header';
 import Main from './components/Main';
 import Footer from './components/Footer';
+import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+    overrides: {
+        MuiPaper: {
+            root: {
+                padding: 16,
+                marginBottom: 16
+            },
+        },
+    },
+    test: {
+        myClass:
+        {
+            padding: 10
+        }
+    }
+});
 
 class App extends React.Component
 {
@@ -18,17 +36,21 @@ class App extends React.Component
     render()
     {
         return (
-            <div className="App">
 
-                <Header
-                // loggedIn={this.state.isLoggedIn}
-                />
+            <ThemeProvider theme={theme}>
 
-                <Main />
+                <div className="App">
 
-                <Footer />
+                    <Header />
 
-            </div>
+                    <Main />
+
+                    <Footer />
+
+                </div>
+
+            </ThemeProvider>
+
         )
     }
 }
