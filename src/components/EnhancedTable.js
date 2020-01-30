@@ -138,7 +138,7 @@ const useToolbarStyles = makeStyles(theme => ({
 const EnhancedTableToolbar = props =>
 {
     const classes = useToolbarStyles();
-    const { numSelected, selected, deleteTodo } = props;
+    let { numSelected, selected, setSelected, deleteTodo } = props;
 
     // console.log(selected)
 
@@ -161,7 +161,12 @@ const EnhancedTableToolbar = props =>
 
             {numSelected > 0 ? (
                 <Tooltip title="Delete">
-                    <IconButton aria-label="delete" onClick={() => props.deleteTodo(selected)}>
+                    <IconButton aria-label="delete" onClick={() =>
+                    {
+                        props.deleteTodo(selected)
+
+                        setSelected([])
+                    }}>
                         <DeleteIcon/>
                     </IconButton>
                 </Tooltip>
@@ -285,7 +290,7 @@ export default function EnhancedTable(props)
         
         <div className={classes.root}>
             <Paper className={classes.paper}>
-                <EnhancedTableToolbar numSelected={selected.length} selected={selected} deleteTodo={props.deleteTodo} />
+                <EnhancedTableToolbar numSelected={selected.length} selected={selected} deleteTodo={props.deleteTodo} setSelected={setSelected} />
                 <TableContainer>
                     <Table
                         className={classes.table}
