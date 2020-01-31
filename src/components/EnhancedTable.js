@@ -19,9 +19,11 @@ import Tooltip from '@material-ui/core/Tooltip';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
+import CheckIcon from '@material-ui/icons/Check';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import moment from 'moment'
 import { priority } from './constants'
+import EditIcon from '@material-ui/icons/Edit';
 
 function desc(a, b, orderBy)
 {
@@ -57,6 +59,8 @@ const headCells = [
     { id: 'name', string: true, disablePadding: true, align: 'left', label: 'Todo' },
     { id: 'dueDate', numeric: false, disablePadding: true, align: 'center', label: 'Due date' },
     { id: 'priority', numeric: true, disablePadding: false, align: 'right', label: 'Priority' },
+    { id: 'completed', numeric: false, disablePadding: true, align: 'right', label: 'Done' },
+    { id: 'edit', numeric: false, disablePadding: false, align: 'right', label: '' },
 ];
 
 function EnhancedTableHead(props)
@@ -119,6 +123,8 @@ const useToolbarStyles = makeStyles(theme => ({
     root: {
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(1),
+        alignItems: "center",
+        justifyContent: "space-between"
     },
     highlight:
         theme.palette.type === 'light'
@@ -131,24 +137,20 @@ const useToolbarStyles = makeStyles(theme => ({
                 backgroundColor: theme.palette.secondary.dark,
             },
     title: {
-        flex: '1 1 100%',
+        // flex: '1 1 100%',
     },
 }));
 
 const EnhancedTableToolbar = props =>
 {
     const classes = useToolbarStyles();
-    let { numSelected, selected, setSelected, deleteTodo } = props;
+    let { numSelected, selected, setSelected, deleteTodo, completeTodo } = props;
 
     // console.log(selected)
 
     return (
 
-        <Toolbar
-            className={clsx(classes.root, {
-                [classes.highlight]: numSelected > 0,
-            })}
-        >
+        <Toolbar className={clsx(classes.root, {[classes.highlight]: numSelected > 0 })}>
             {numSelected > 0 ? (
                 <Typography className={classes.title} color="inherit" variant="subtitle1">
                     {numSelected} selected
@@ -160,6 +162,17 @@ const EnhancedTableToolbar = props =>
                 )}
 
             {numSelected > 0 ? (
+                <>
+                    <Tooltip title="Complete">
+                        <IconButton aria-label="completed" onClick={() =>
+                        {
+                            props.completeTodo(selected)
+
+                            setSelected([])
+                        }}>
+                            <CheckIcon />
+                        </IconButton>
+                    </Tooltip>
                 <Tooltip title="Delete">
                     <IconButton aria-label="delete" onClick={() =>
                     {
@@ -170,6 +183,7 @@ const EnhancedTableToolbar = props =>
                         <DeleteIcon/>
                     </IconButton>
                 </Tooltip>
+                    </>
             ) : (
                     <Tooltip title="Filter list">
                         <IconButton aria-label="filter list">
@@ -187,14 +201,18 @@ EnhancedTableToolbar.propTypes = {
 
 const useStyles = makeStyles(theme => ({
     root: {
-        // width: '100%',
+        display: "flex",
+         alignItems: "center",
+        justifyContent: "center"
     },
     paper: {
-        // width: '100%',
-        // marginBottom: theme.spacing(2),
+        padding: "16px",
+        marginBottom: theme.spacing(2),
+        marginTop: 10,
+        width: "100%"
     },
     table: {
-        // minWidth: 750,
+        // width: "auto",
     },
     visuallyHidden: {
         border: 0,
@@ -216,7 +234,7 @@ export default function EnhancedTable(props)
     const [orderBy, setOrderBy] = React.useState('name');
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
-    const [dense, setDense] = React.useState(false);
+    const [dense, setDense] = React.useState(true);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const handleRequestSort = (event, property) =>
@@ -230,9 +248,9 @@ export default function EnhancedTable(props)
     {
         if (event.target.checked)
         {
-            const newSelecteds = props.todos.map(n => n.name);
+            const newSelected = props.todos.map(n => n.id);
             
-            setSelected(newSelecteds);
+            setSelected(newSelected);
             
             return;
         }
@@ -241,7 +259,7 @@ export default function EnhancedTable(props)
     };
 
     const handleClick = (event, id) =>
-    {
+    {        
         const selectedIndex = selected.indexOf(id);
         let newSelected = [];
 
@@ -290,7 +308,12 @@ export default function EnhancedTable(props)
         
         <div className={classes.root}>
             <Paper className={classes.paper}>
-                <EnhancedTableToolbar numSelected={selected.length} selected={selected} deleteTodo={props.deleteTodo} setSelected={setSelected} />
+                <EnhancedTableToolbar
+                    numSelected={selected.length}
+                    selected={selected}
+                    deleteTodo={props.deleteTodo}
+                    completeTodo={props.completeTodo}
+                    setSelected={setSelected} />
                 <TableContainer>
                     <Table
                         className={classes.table}
@@ -332,9 +355,33 @@ export default function EnhancedTable(props)
                                                     inputProps={{ 'aria-labelledby': labelId }}
                                                 />
                                             </TableCell>
-                                            <TableCell component="th" id={labelId} scope="row" padding="none">{row.name}</TableCell>
+                                            <TableCell
+                                                component="th"
+                                                id={labelId}
+                                                scope="row"
+                                                padding="none"
+                                                style={{ width: '100%' }}>{row.name}
+                                            </TableCell>
                                             <TableCell align="right">{moment(row.dueDate).format('MM/DD/YYYY h:mm a')}</TableCell>
                                             <TableCell align="right">{priority.map(p => p.value === row.priority ? p.label : null)}</TableCell>
+                                            <TableCell align="right">{row.completed ? "Yep" : "Nope"}
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Tooltip title="Edit">
+                                                    <IconButton aria-label="edit" onClick={(e) =>
+                                                    {
+                                                        alert('Hey')
+
+                                                        e.stopPropagation()
+                                                        
+                                                        // props.deleteTodo(selected)
+
+                                                        setSelected([])
+                                                    }}>
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </TableCell>
                                         </TableRow>
                                     );
                                 })}
@@ -355,11 +402,12 @@ export default function EnhancedTable(props)
                     onChangePage={handleChangePage}
                     onChangeRowsPerPage={handleChangeRowsPerPage}
                 />
+                <FormControlLabel
+                    control={<Switch checked={dense} onChange={handleChangeDense} />}
+                    label="Dense"
+                />
             </Paper>
-            <FormControlLabel
-                control={<Switch checked={dense} onChange={handleChangeDense} />}
-                label="Dense padding"
-            />
+           
         </div>
     );
 }

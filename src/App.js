@@ -3,29 +3,9 @@ import './App.css';
 import Header from './components/Header';
 import Main from './components/Main';
 import Footer from './components/Footer';
-import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-
-const theme = createMuiTheme({
-    overrides: {
-        MuiPaper: {
-            root: {
-                paddingLeft: 16,
-                paddingRight: 16
-            },
-        },
-        MuiAppBar: {
-            root: {
-                marginBottom: 32
-            },
-        },
-    },
-    test: {
-        myClass:
-        {
-            padding: 10
-        }
-    }
-});
+import { ThemeProvider } from '@material-ui/core/styles';
+import { GlobalLoader } from './components/AxiosInterceptor'
+import theme from './theme'
 
 class App extends React.Component
 {
@@ -45,6 +25,9 @@ class App extends React.Component
             <ThemeProvider theme={theme}>
 
                 <div className="App">
+                    
+                    {/* Loading indicator */}
+                    <GlobalLoader />
 
                     <Header />
 

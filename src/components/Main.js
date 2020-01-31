@@ -56,12 +56,36 @@ class Main extends Component
             ApiService.deleteTodo(id).then
                 (res =>
                 {
-                    let { todos } = this.state;
+                    let deletedTodo = res.data;
 
-                    todos.pop(res.data);
+                    this.setState(prevState => ({
+                        todos: prevState.todos.filter(todo => todo.id != deletedTodo.id)
+                    }));
+                })
+        })
+    }
 
-                    this.setState({ todos: todos });
-            })
+    completeTodo = ids =>
+    {
+        console.log('ids to be completed', ids)
+
+        const { todos } = this.state
+
+        ids.map(id =>
+        {
+            let todo = todos.find(todo => todo.id === id)
+
+            todo.completed = !todo.completed
+
+            ApiService.editTodo(todo).then(
+                res =>
+                {
+                    console.log('Todo completed', id)
+
+                    this.setState(prevState => ({
+                        todos: todos
+                    }));
+                })
         })
     }
 
@@ -69,20 +93,27 @@ class Main extends Component
     {
         let { todos } = this.state;
 
+        // console.log(this.props.theme.Paper)
+
         return (
 
             <main className="Main">
 
                 <Grid container justify="center" alignItems="center" spacing={2} xs={12}>
-                    <Grid item xs={4}>
-                        <Paper>
+                    <Grid item xs={12} lg={4}>
+                        <Paper style={this.props.theme.Paper}>
                             <TodoForm onSubmit={this.addTodo} />
                         </Paper>
                     </Grid>
 
-                    <Grid item xs={5}>
-                        <Paper>
-                            <TodoList todos={todos} deleteTodo={this.deleteTodo} />
+                    {/* {console.log(todos)} */}
+
+                    <Grid item xs={12} lg={5}>
+                        <Paper style={this.props.theme.Paper}>
+                            <TodoList
+                                todos={todos}
+                                deleteTodo={this.deleteTodo}
+                                completeTodo={this.completeTodo} />
                         </Paper>
                     </Grid>
                 </Grid>

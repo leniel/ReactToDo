@@ -8,38 +8,17 @@ export default class TodoList extends Component
         super(props)
     }
 
-    componentDidMount()
-    {
-        
-    }
-
-    deleteTodo()
-    {
-        console.log('hey jude')
-        //alert(todo)
-
-        //console.log(todo)
-    }
-
     render()
     {
         return (
 
             <>
-
-                {/* <div className="todo-list"> */}
-                    {/* {this.props.todos.map(todo => (
-                        <TodoItem
-                            key={todo.id}
-                            toggleComplete={() => this.toggleComplete(todo.id)}
-                            // onDelete={() => this.deleteTodo(todo.id)}
-                            todo={todo}
-                        />
-                    ))} */}
-
-                    <EnhancedTable todos={this.props.todos} deleteTodo={this.props.deleteTodo} />
-
-                {/* </div> */}
+                
+                <EnhancedTable
+                    todos={this.props.todos}
+                    deleteTodo={this.props.deleteTodo}
+                    completeTodo={this.props.completeTodo}
+                />
 
             </>
 

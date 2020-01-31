@@ -79,6 +79,8 @@ export default function TodoForm(props)
                                         disablePast
                                         clearable
                                         fullWidth
+                                        autoOk
+                                        format="MM/dd/yyyy HH:mm a"
                                         component={DateTimePicker}
                                         value={values.dueDate}
                                         error={errors.dueDate}
@@ -111,14 +113,14 @@ export default function TodoForm(props)
 
                                 </Grid>
 
+                                {isSubmitting && <LinearProgress />}
+                                
                                 <Grid item xl={fieldSize}
                                     md={fieldSize}
                                     sm={fieldSize}
                                     xs={fieldSize}
                                     align="center" justify="center">
 
-                                    {isSubmitting && <LinearProgress />}
-                                    <br></br>
                                     <Button
                                         variant="contained"
                                         color="primary"
