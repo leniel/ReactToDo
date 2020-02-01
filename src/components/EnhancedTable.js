@@ -24,6 +24,7 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import moment from 'moment'
 import { priority } from './constants'
 import EditIcon from '@material-ui/icons/Edit';
+import { withTheme } from '@material-ui/core/styles';
 
 function desc(a, b, orderBy)
 {
@@ -56,11 +57,11 @@ function getSorting(order, orderBy)
 }
 
 const headCells = [
-    { id: 'name', string: true, disablePadding: true, align: 'left', label: 'Todo' },
+    { id: 'name', string: true, disablePadding: false, align: 'left', label: 'Todo' },
     { id: 'dueDate', numeric: false, disablePadding: true, align: 'center', label: 'Due date' },
     { id: 'priority', numeric: true, disablePadding: false, align: 'right', label: 'Priority' },
-    { id: 'completed', numeric: false, disablePadding: true, align: 'right', label: 'Done' },
-    { id: 'edit', numeric: false, disablePadding: false, align: 'right', label: '' },
+    { id: 'completed', numeric: false, disablePadding: false, align: 'right', label: 'Done' },
+    { id: 'edit', numeric: false, disablePadding: true, align: 'right', label: '' },
 ];
 
 function EnhancedTableHead(props)
@@ -129,12 +130,12 @@ const useToolbarStyles = makeStyles(theme => ({
     highlight:
         theme.palette.type === 'light'
             ? {
-                color: theme.palette.secondary.main,
-                backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+                color: theme.palette.primary.main,
+                backgroundColor: lighten(theme.palette.primary.light, 0.85),
             }
             : {
                 color: theme.palette.text.primary,
-                backgroundColor: theme.palette.secondary.dark,
+                backgroundColor: theme.palette.primary.dark,
             },
     title: {
         // flex: '1 1 100%',
@@ -227,7 +228,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function EnhancedTable(props)
+function EnhancedTable(props)
 {
     const classes = useStyles();
     const [order, setOrder] = React.useState('asc');
@@ -260,6 +261,9 @@ export default function EnhancedTable(props)
 
     const handleClick = (event, id) =>
     {        
+        // When clicking the table disable editing
+        props.loadTodo(null)
+
         const selectedIndex = selected.indexOf(id);
         let newSelected = [];
 
@@ -304,16 +308,25 @@ export default function EnhancedTable(props)
 
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, props.todos.length - page * rowsPerPage);
 
+    const handleEdit = (e, id) =>
+    {
+        e.stopPropagation()
+
+        props.loadTodo(id)
+    }
+    
     return (
         
         <div className={classes.root}>
+
             <Paper className={classes.paper}>
                 <EnhancedTableToolbar
                     numSelected={selected.length}
                     selected={selected}
                     deleteTodo={props.deleteTodo}
                     completeTodo={props.completeTodo}
-                    setSelected={setSelected} />
+                    setSelected={setSelected}
+                    theme={props.theme}/>
                 <TableContainer>
                     <Table
                         className={classes.table}
@@ -367,17 +380,8 @@ export default function EnhancedTable(props)
                                             <TableCell align="right">{row.completed ? "Yep" : "Nope"}
                                             </TableCell>
                                             <TableCell align="right">
-                                                <Tooltip title="Edit">
-                                                    <IconButton aria-label="edit" onClick={(e) =>
-                                                    {
-                                                        alert('Hey')
-
-                                                        e.stopPropagation()
-                                                        
-                                                        // props.deleteTodo(selected)
-
-                                                        setSelected([])
-                                                    }}>
+                                                <Tooltip title="Edit" disabled={row.completed && "disabled"}>
+                                                    <IconButton aria-label="edit" onClick={e => handleEdit(e, row.id)}>
                                                         <EditIcon />
                                                     </IconButton>
                                                 </Tooltip>
@@ -407,7 +411,8 @@ export default function EnhancedTable(props)
                     label="Dense"
                 />
             </Paper>
-           
         </div>
     );
 }
+
+export default withTheme(EnhancedTable);

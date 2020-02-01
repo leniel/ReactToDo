@@ -5,7 +5,7 @@ import Main from './components/Main';
 import Footer from './components/Footer';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { GlobalLoader } from './components/AxiosInterceptor'
-import theme from './theme'
+import { theme } from './theme'
 
 class App extends React.Component
 {

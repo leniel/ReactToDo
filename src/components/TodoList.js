@@ -18,6 +18,7 @@ export default class TodoList extends Component
                     todos={this.props.todos}
                     deleteTodo={this.props.deleteTodo}
                     completeTodo={this.props.completeTodo}
+                    loadTodo={this.props.loadTodo}
                 />
 
             </>

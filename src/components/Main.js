@@ -6,29 +6,36 @@ import TodoForm from './TodoForm';
 import ApiService from "../service/TodoService";
 import { withTheme } from '@material-ui/core/styles';
 
+const emptyTodo = { name: '', dueDate: null, priority: '' }
+
 class Main extends Component
 {
     constructor(props)
     {
         super(props)
 
-        this.state = { todos: [] };
+        this.state = {
+            todos: [],
+            todo: emptyTodo
+        }
     }
 
     async componentDidMount()
     {
-        this.reloadTodoList()
-    }
-
-    reloadTodoList()
-    {
-        //debugger;
-
+        // Get todos from Web API
         ApiService.getTodos()
             .then((res) =>
             {
                 this.setState({ todos: res.data })
             });
+    }
+
+    saveTodo = todo =>
+    {
+        debugger;
+
+        // Existing todo?
+        todo.id ? this.editTodo(todo) : this.addTodo(todo)
     }
 
     addTodo = todo =>
@@ -45,6 +52,49 @@ class Main extends Component
                 this.setState({ todos: todos });
             }
         )
+    }
+
+    editTodo = editedTodo =>
+    {
+        debugger;
+
+        console.log('Editing todo with id = ' + editedTodo.id)
+
+        ApiService.editTodo(editedTodo).then(
+            res =>
+            {
+                console.log('Todo edit saved', 2, res)
+
+                let { todos } = this.state;
+
+                const newTodos = todos.map(todo => todo.id === editedTodo.id ? editedTodo : todo)
+
+                this.setState({
+                    todos: newTodos,
+                    todo: emptyTodo
+                });
+            }
+        )
+    }
+
+    loadTodo = id =>
+    {
+        if (id)
+        {
+            console.log('Loading todo with id = ' + id)
+
+            const { todos } = this.state
+
+            let todo = todos.find(todo => todo.id === id)
+
+            //debugger;
+
+            this.setState({ todo: todo });
+        }
+        else
+        {
+            this.setState({ todo: emptyTodo });
+        }
     }
 
     deleteTodo = ids =>
@@ -91,7 +141,7 @@ class Main extends Component
 
     render()
     {
-        let { todos } = this.state;
+        let { todos, todo } = this.state;
 
         // console.log(this.props.theme.Paper)
 
@@ -99,21 +149,22 @@ class Main extends Component
 
             <main className="Main">
 
-                <Grid container justify="center" alignItems="center" spacing={2} xs={12}>
+                <Grid container justify="flex-end" alignItems="center" spacing={2} xs={12}>
                     <Grid item xs={12} lg={4}>
                         <Paper style={this.props.theme.Paper}>
-                            <TodoForm onSubmit={this.addTodo} />
+                            <TodoForm onSubmit={this.saveTodo} todo={todo} />
                         </Paper>
                     </Grid>
 
                     {/* {console.log(todos)} */}
 
-                    <Grid item xs={12} lg={5}>
+                    <Grid item xs={12} lg={6}>
                         <Paper style={this.props.theme.Paper}>
                             <TodoList
                                 todos={todos}
                                 deleteTodo={this.deleteTodo}
-                                completeTodo={this.completeTodo} />
+                                completeTodo={this.completeTodo}
+                                loadTodo={this.loadTodo} />
                         </Paper>
                     </Grid>
                 </Grid>

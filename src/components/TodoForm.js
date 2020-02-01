@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useEffect} from "react"
 import * as Yup from 'yup';
 import { Button, MenuItem, LinearProgress, TextField } from '@material-ui/core';
 import { Formik, Form, Field } from 'formik';
@@ -11,6 +11,22 @@ export default function TodoForm(props)
 {
     const fieldSize = 12
 
+    let input = null
+
+    // Setting focus when todo changes...
+    useEffect(() =>
+    {
+        console.log('rendered!')
+            
+        if (input)
+        {      
+            //debugger;
+                
+            input.focus()
+        }
+
+    }, [props.todo])
+
     return (
 
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -18,7 +34,9 @@ export default function TodoForm(props)
                 validateOnMount={false} // Can validate the form up front with true
                 validateOnChange={true}
                 validateOnBlur={true}
-                initialValues={{ name: '', dueDate: null, priority: '' }}
+                //initialValues={{ name: '', dueDate: null, priority: '' }}
+                initialValues={props.todo} // empty todo (Add) or existing todo (Edit)
+                enableReinitialize={true} // this enables filling the form with existing values
 
                 validationSchema={Yup.object({
                     name:
@@ -34,15 +52,10 @@ export default function TodoForm(props)
                             .required('Required')
                 })}
 
-                onSubmit={(values, { setSubmitting, resetForm }) =>
+                onSubmit={(values, { setSubmitting, resetForm, initialValues}) =>
                 {
-                    //values.priority = parseInt(values.priority)
-
-                    //alert(JSON.stringify(values, null, 2));
-
                     props.onSubmit(values)
 
-                    // Resets form after submission is complete
                     resetForm()
                 }}
             >
@@ -57,7 +70,7 @@ export default function TodoForm(props)
 
                                 <Grid item xl={fieldSize} md={fieldSize} sm={fieldSize} xs={fieldSize}>
                                     <TextField
-                                        autoFocus={true}
+                                        autoFocus
                                         fullWidth
                                         name='name'
                                         label='Todo'
@@ -67,6 +80,7 @@ export default function TodoForm(props)
                                         error={errors.name}
                                         touched={touched.name}
                                         value={values.name}
+                                        inputRef={(button) => { input = button }}
                                     />
                                 </Grid>
 
@@ -135,8 +149,7 @@ export default function TodoForm(props)
                             {/* Useful during debugging - it shows all Formik props */}
                             {/* <pre>{JSON.stringify(props, null, 2)}</pre> */}
 
-                        </Form>
-
+                        </Form>                    
                     );
                 }}
 
