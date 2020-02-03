@@ -13,8 +13,9 @@ const theme = createMuiTheme({
     overrides: {
         MuiAppBar: {
             root: {
-                marginBottom: 16,
-                backgroundColor: 'transparent', boxShadow: 'none'
+                height: 60,
+                backgroundColor: 'transparent',
+                boxShadow: 'none'
             },
         },
         MuiToolbar: {

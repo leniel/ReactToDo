@@ -6,15 +6,24 @@ p{
   margin-bottom: 0;
 }
 
-.Main {
-  flex: 1 0 auto;
-  min-height: auto;
+#root
+{
+
+}
+
+.main {
+/* height: 100vh;  */
+  /* display: flex;  */
+  /* align-items: center; 
+  justify-content: center; */
 }
 
 .App {
   display: flex;
-  flex-direction: column;
   min-height: 100vh;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
 }
 
 .App-logo {
@@ -28,15 +37,30 @@ p{
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  /* min-height: 100vh; */
-  display: flex;
-  flex-direction: column;
+.header {
+    display: flex;
+    align-items: flex-start;
+  justify-content: center;
+  margin-bottom: 80px;
+}
+
+.main
+{
+    align-items: flex-start;
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.Footer
+{
+display:flex;
+  background-color: black;
+  height: 7vmin;
+  color: white;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  width: 100%;
 }
 
 .App-link {
@@ -52,68 +76,25 @@ p{
   }
 }
 
-.Footer
-{
-  background-color: black;
-  height: 7vmin;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* #region Todo List */
-
-.todo-list {
-  background-color: white;
-  margin: auto;
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border: 1px solid #efefef;
-  box-shadow:
-  /* The top layer shadow */
-      0 1px 1px rgba(0,0,0,0.15),
-          /* The second layer */
-      0 10px 0 -5px #eee,
-          /* The second layer shadow */
-      0 10px 1px -4px rgba(0,0,0,0.15),
-          /* The third layer */
-      0 20px 0 -10px #eee,
-          /* The third layer shadow */
-      0 20px 1px -9px rgba(0,0,0,0.15);
-  padding: 30px;
-}
-
-.todo-item {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  /* padding: 30px 20px 0; */
-  width: 70%;
-  height: 50px;
-  border-bottom: 1px solid #cecece;
-  font-family: Roboto, sans-serif;
-  font-weight: 100;
-  font-size: 15px;
-  color: #333333;
-}
-
-input[type=checkbox] {
-  margin-right: 10px;
-  font-size: 30px;
-}
-
-input[type=checkbox]:focus {
-  outline: 0;
-}
-
-/*#endregion Todo */
-
 .login-status
 {
   color:orange;
   display: flex;
   text-align: left;
+}
+
+.about
+{
+    margin-left: 32px;
+    display: flex;
+    /* align-items: center; */
+    /* justify-content: center; */
+    flex-grow: 1;
+}
+
+.home
+{
+    display: flex;
+    align-items: center;
+  justify-content: center;
 }

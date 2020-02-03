@@ -4,7 +4,39 @@ import { LinearProgress } from '@material-ui/core';
 
 const { useState, useCallback, useMemo, useEffect } = React;
 
-export const ax = axios.create();
+let ax = axios.create();
+
+// Add a request interceptor
+ax.interceptors.request.use(function (config)
+{
+    //debugger
+
+    // Do something before request is sent
+    return config;
+}, function (error)
+{
+    //debugger
+    // Do something with request error
+    return Promise.reject(error)
+});
+
+// Add a response interceptor
+ax.interceptors.response.use(function (response)
+{
+    //debugger
+
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    // Do something with response data
+    return response
+}, function (error)
+{
+    //debugger
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    // Do something with response error
+    return Promise.reject(error)
+});
+
+export default ax
 
 const useAxiosLoader = () =>
 {
@@ -61,5 +93,5 @@ export const GlobalLoader = () =>
 {
     const [loading] = useAxiosLoader();
 
-    return <div>{loading && <LinearProgress/>}</div>;
+    return <div>{loading && <LinearProgress />}</div>;
 };

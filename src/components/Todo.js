@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import TodoList from './TodoList';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import TodoForm from './TodoForm';
 import ApiService from "../service/TodoService";
 import { withTheme } from '@material-ui/core/styles';
+import EnhancedTable from './EnhancedTable'
 
 const emptyTodo = { name: '', dueDate: null, priority: '' }
 
@@ -32,7 +32,7 @@ class Main extends Component
 
     saveTodo = todo =>
     {
-        debugger;
+        //debugger;
 
         // Existing todo?
         todo.id ? this.editTodo(todo) : this.addTodo(todo)
@@ -56,7 +56,7 @@ class Main extends Component
 
     editTodo = editedTodo =>
     {
-        debugger;
+        //debugger;
 
         console.log('Editing todo with id = ' + editedTodo.id)
 
@@ -147,9 +147,7 @@ class Main extends Component
 
         return (
 
-            <main className="Main">
-
-                <Grid container justify="flex-end" alignItems="center" spacing={2} xs={12}>
+            <Grid container justify="flex-end" alignItems="center" spacing={2} lg={12}>
                     <Grid item xs={12} lg={4}>
                         <Paper style={this.props.theme.Paper}>
                             <TodoForm onSubmit={this.saveTodo} todo={todo} />
@@ -160,16 +158,16 @@ class Main extends Component
 
                     <Grid item xs={12} lg={6}>
                         <Paper style={this.props.theme.Paper}>
-                            <TodoList
+
+                            <EnhancedTable
                                 todos={todos}
                                 deleteTodo={this.deleteTodo}
                                 completeTodo={this.completeTodo}
-                                loadTodo={this.loadTodo} />
+                                loadTodo={this.loadTodo}
+                            />
                         </Paper>
                     </Grid>
                 </Grid>
-
-            </main>
         )
     }
 }
