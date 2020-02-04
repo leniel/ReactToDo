@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import TodoForm from './TodoForm';
+import { EnhancedTodoForm } from './TodoFormWithFormik';
 import ApiService from "../service/TodoService";
 import { withTheme } from '@material-ui/core/styles';
 import EnhancedTable from './EnhancedTable'
+import { toast } from 'react-toastify';
 
 const emptyTodo = { name: '', dueDate: null, priority: '' }
 
-class Main extends Component
+class Todo extends Component
 {
     constructor(props)
     {
@@ -50,6 +51,10 @@ class Main extends Component
                 todos.push(res.data);
 
                 this.setState({ todos: todos });
+
+                toast.success("Todo saved.", {
+                    position: toast.POSITION.TOP_CENTER
+                });
             }
         )
     }
@@ -73,26 +78,41 @@ class Main extends Component
                     todos: newTodos,
                     todo: emptyTodo
                 });
+
+                toast.success("Todo edited.", {
+                    position: toast.POSITION.TOP_CENTER
+                });
             }
         )
+    }
+
+    resetTodo = () =>
+    {
+        //debugger
+
+        console.log('Resetting todo to empty todo...')
+
+        this.setState({ todo: emptyTodo });
     }
 
     loadTodo = id =>
     {
         if (id)
-        {
+        {           
             console.log('Loading todo with id = ' + id)
 
             const { todos } = this.state
 
             let todo = todos.find(todo => todo.id === id)
-
+            
             //debugger;
 
-            this.setState({ todo: todo });
+            this.setState({todo: todo})
         }
         else
         {
+            debugger
+
             this.setState({ todo: emptyTodo });
         }
     }
@@ -141,7 +161,7 @@ class Main extends Component
 
     render()
     {
-        let { todos, todo } = this.state;
+        const { todos, todo } = this.state;
 
         // console.log(this.props.theme.Paper)
 
@@ -150,7 +170,7 @@ class Main extends Component
             <Grid container justify="flex-end" alignItems="center" spacing={2} lg={12}>
                     <Grid item xs={12} lg={4}>
                         <Paper style={this.props.theme.Paper}>
-                            <TodoForm onSubmit={this.saveTodo} todo={todo} />
+                        <EnhancedTodoForm onSubmit={this.saveTodo} todo={todo} resetTodo={this.resetTodo} />
                         </Paper>
                     </Grid>
 
@@ -172,4 +192,4 @@ class Main extends Component
     }
 }
 
-export default withTheme(Main);
+export default withTheme(Todo);

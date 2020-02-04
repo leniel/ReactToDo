@@ -4,23 +4,7 @@ function Home()
 {
     return (
         <div className="home">
-        <h1>Home
-    
-                sweet Home
-    
-                Alabama
-    
-                Home
-    
-                sweet Home
-    
-                Alabama
-    
-                Home
-    
-                sweet Home
-    
-                Alabama
+        <h1>React To Do app proudly developed by Leniel Maccaferri while learning React JS.
         </h1>
         </div>
     )

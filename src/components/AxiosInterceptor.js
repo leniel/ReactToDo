@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { LinearProgress } from '@material-ui/core';
+import { toast } from 'react-toastify';
 
 const { useState, useCallback, useMemo, useEffect } = React;
 
@@ -16,6 +17,9 @@ ax.interceptors.request.use(function (config)
 }, function (error)
 {
     //debugger
+
+        console.log(JSON.stringify(error, null, 3))
+
     // Do something with request error
     return Promise.reject(error)
 });
@@ -31,6 +35,8 @@ ax.interceptors.response.use(function (response)
 }, function (error)
 {
     //debugger
+
+        console.log(JSON.stringify(error, null, 3))
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
     return Promise.reject(error)

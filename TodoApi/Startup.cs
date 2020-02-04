@@ -35,10 +35,10 @@ namespace TodoApi
             }
 
             app.UseCors(builder => builder
-                    .WithOrigins("http://localhost:3000")
+                    .WithOrigins("*")
                     .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials());
+                    .AllowAnyHeader());
+            //.AllowCredentials());
 
             app.UseHttpsRedirection();
 

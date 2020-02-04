@@ -1,4 +1,4 @@
-import React, {useEffect} from "react"
+import React, { useEffect, useState } from "react"
 import * as Yup from 'yup';
 import { Button, MenuItem, LinearProgress, TextField } from '@material-ui/core';
 import { Formik, Form, Field } from 'formik';
@@ -17,11 +17,11 @@ export default function TodoForm(props)
     useEffect(() =>
     {
         console.log('rendered!')
-            
+
         if (input)
-        {      
+        {
             //debugger;
-                
+
             input.focus()
         }
 
@@ -30,6 +30,7 @@ export default function TodoForm(props)
     return (
 
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
+
             <Formik
                 validateOnMount={false} // Can validate the form up front with true
                 validateOnChange={true}
@@ -37,7 +38,6 @@ export default function TodoForm(props)
                 //initialValues={{ name: '', dueDate: null, priority: '' }}
                 initialValues={props.todo} // empty todo (Add) or existing todo (Edit)
                 enableReinitialize={true} // this enables filling the form with existing values
-
                 validationSchema={Yup.object({
                     name:
                         Yup.string()
@@ -51,9 +51,10 @@ export default function TodoForm(props)
                         Yup.number()
                             .required('Required')
                 })}
-
-                onSubmit={(values, { setSubmitting, resetForm, initialValues}) =>
+                onSubmit={(values, { setSubmitting, resetForm, initialValues }) =>
                 {
+                    debugger
+
                     props.onSubmit(values)
 
                     resetForm()
@@ -61,7 +62,7 @@ export default function TodoForm(props)
             >
                 {props =>
                 {
-                    const { handleChange, values, errors, touched, handleSubmit, submitForm, isSubmitting, setFieldValue } = props;
+                    const { handleReset, initialValues, handleChange, values, errors, touched, handleSubmit, resetForm, submitForm, isSubmitting, setFieldValue, setValues } = props;
                     return (
 
                         <Form>
@@ -80,7 +81,7 @@ export default function TodoForm(props)
                                         error={errors.name}
                                         touched={touched.name}
                                         value={values.name}
-                                        inputRef={(button) => { input = button }}
+                                        inputRef={(i) => { input = i }}
                                     />
                                 </Grid>
 
@@ -128,12 +129,12 @@ export default function TodoForm(props)
                                 </Grid>
 
                                 {isSubmitting && <LinearProgress />}
-                                
+
                                 <Grid item xl={fieldSize}
                                     md={fieldSize}
                                     sm={fieldSize}
                                     xs={fieldSize}
-                                    align="center" justify="center">
+                                    align="center" justify="stretch">
 
                                     <Button
                                         variant="contained"
@@ -143,13 +144,29 @@ export default function TodoForm(props)
                                     >
                                         Save
           </Button>
+
+                                    <Button
+                                        variant="contained"
+                                        // color="secondary"
+                                        onClick={() =>
+                                        {
+                                            //resetForm({ values: { name: '', dueDate: null, priority: '' } })
+
+                                            resetForm()
+                                        }}
+                                        type="button"
+                                        style={values.id ? { display: 'initial', marginLeft: '16px' } : { display: 'none' }}
+                                    >
+                                        Cancel
+          </Button>
+
                                 </Grid>
                             </Grid>
 
                             {/* Useful during debugging - it shows all Formik props */}
                             {/* <pre>{JSON.stringify(props, null, 2)}</pre> */}
 
-                        </Form>                    
+                        </Form>
                     );
                 }}
 

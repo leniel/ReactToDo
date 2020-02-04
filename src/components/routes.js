@@ -11,19 +11,22 @@ export const routes = [
     {
         text: "Home",
         path: "/",
+        icon: "home",
         exact: true,
-        main: () => <Home />
+        component: () => <Home />
     },
     {
         text: "Todos",
         path: "/todos",
-        main: () => <Todo />
+        icon: "list",
+        component: () => <Todo />
     },
     {
         text: "About",
         path: "/about",
+        icon: "info",
         exact: true,
-        main: () => <About />,
+        component: () => <About />,
         children: []
     }
 ];

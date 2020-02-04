@@ -7,6 +7,8 @@ import { GlobalLoader } from './components/AxiosInterceptor'
 import { theme } from './theme'
 import { Switch, Route } from "react-router-dom";
 import { routes } from './components/routes'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class App extends React.Component
 {
@@ -32,6 +34,8 @@ class App extends React.Component
 
                     <Header />
 
+                    <ToastContainer />
+
                     <div className="main">
                     <Switch>
                         {routes.map((route, index) => (
@@ -39,7 +43,7 @@ class App extends React.Component
                                 key={index}
                                 path={route.path}
                                 exact={route.exact}
-                                component={route.main}
+                                component={route.component}
                             />
                         ))}
                         </Switch>

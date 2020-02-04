@@ -13,14 +13,12 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 import logo from '../logo.svg';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Link }  from "react-router-dom";
 import { routes } from './routes'
+import Icon from '@material-ui/core/Icon'
 
 const drawerWidth = 200;
 
@@ -29,28 +27,28 @@ const useStyles = makeStyles(theme => ({
         // display: 'flex',
     },
     appBar: {
-    //     transition: theme.transitions.create(['margin', 'width'], {
-    //         easing: theme.transitions.easing.sharp,
-    //         duration: theme.transitions.duration.leavingScreen,
-    //     }),
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
     },
     appBarShift: {
-        // width: `calc(100% - ${drawerWidth}px)`,
-        // marginLeft: drawerWidth,
-        // transition: theme.transitions.create(['margin', 'width'], {
-        //     easing: theme.transitions.easing.easeOut,
-        //     duration: theme.transitions.duration.enteringScreen,
-        // }),
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: drawerWidth,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
     },
     menuButton: {
-        // marginRight: theme.spacing(2),
+        marginRight: theme.spacing(2),
     },
     hide: {
         display: 'none',
     },
     drawer: {
-        // width: drawerWidth,
-        // flexShrink: 0,
+        width: drawerWidth,
+        flexShrink: 0,
     },
     drawerPaper: {
         width: drawerWidth,
@@ -72,11 +70,11 @@ const useStyles = makeStyles(theme => ({
         // marginLeft: -drawerWidth,
     },
     contentShift: {
-        // transition: theme.transitions.create('margin', {
-        //     easing: theme.transitions.easing.easeOut,
-        //     duration: theme.transitions.duration.enteringScreen,
-        // }),
-        // marginLeft: 0,
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: 0,
     },
 }));
 
@@ -153,8 +151,8 @@ export default function PersistentDrawerLeft()
                             component={Link}
                             to={route.path}
                             onClick={handleDrawerClose}>
-                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                            <ListItemText primary={route.text} />
+                            <Icon>{route.icon}</Icon>
+                            <ListItemText primary={route.text} style={{marginLeft: "7px"}} />
                         </ListItem>
                     ))}
                 </List>
