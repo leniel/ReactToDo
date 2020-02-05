@@ -1,7 +1,7 @@
 import React from 'react';
 import About from "./About";
 import Home from "./Home"
-import Todo from "./Todo"
+import Todo from "./todo/Todo"
 
 // We are going to use this route config in 2
 // spots: once for the sidebar and once in the main

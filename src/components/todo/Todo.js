@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { EnhancedTodoForm } from './TodoFormWithFormik';
-import ApiService from "../service/TodoService";
+import ApiService from "../../service/TodoService";
 import { withTheme } from '@material-ui/core/styles';
-import EnhancedTable from './EnhancedTable'
+import EnhancedTable from '../EnhancedTable'
 import { toast } from 'react-toastify';
 
 const emptyTodo = { name: '', dueDate: null, priority: '' }

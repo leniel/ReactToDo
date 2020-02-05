@@ -5,7 +5,7 @@ import { Form, Field, withFormik } from 'formik';
 import DateFnsUtils from '@date-io/date-fns';
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Grid from '@material-ui/core/Grid';
-import { priority } from './constants'
+import { priority } from '../constants'
 
 const TodoForm = props =>
 {

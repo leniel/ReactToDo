@@ -91,3 +91,10 @@ p {
   align-items: center;
   justify-content: center;
 }
+
+.progress
+{
+    z-index: 10000;
+    position: absolute !important;
+    width: 100%;
+}

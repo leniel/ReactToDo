@@ -99,5 +99,5 @@ export const GlobalLoader = () =>
 {
     const [loading] = useAxiosLoader();
 
-    return <div>{loading && <LinearProgress />}</div>;
+    return <div>{loading && <LinearProgress className="progress" />}</div>;
 };

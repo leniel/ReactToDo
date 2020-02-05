@@ -10,8 +10,8 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/TodoApi/bin/debug/netcoreapp3.1/TodoApi.dll",
-            "args": ["urls=http://localhost:7777"],
-            "cwd": "${workspaceFolder}",
+            "args": ["urls=http://localhost:8888"],
+            "cwd": "${workspaceFolder}/TodoApi",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",

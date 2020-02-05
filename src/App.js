@@ -27,10 +27,11 @@ class App extends React.Component
 
             <ThemeProvider theme={theme}>
 
+                <GlobalLoader />
+                
                 <div className="App">
 
                     {/* Loading indicator */}
-                    <GlobalLoader />
 
                     <Header />
 
