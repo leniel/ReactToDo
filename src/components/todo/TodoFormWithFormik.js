@@ -27,7 +27,7 @@ const TodoForm = props =>
 
     const fieldSize = 12
 
-    const { resetTodo, initialValues, handleChange, values, errors, touched, handleSubmit, resetForm, submitForm, isSubmitting, setFieldValue, setValues } = props;
+    const { dirty, isValid, resetTodo, initialValues, handleChange, values, errors, touched, handleSubmit, resetForm, submitForm, isSubmitting, setFieldValue, setValues } = props;
 
     return (
 
@@ -110,7 +110,7 @@ const TodoForm = props =>
                         <Button
                             variant="contained"
                             color="primary"
-                            disabled={isSubmitting}
+                            disabled={!dirty || !isValid}
                             onClick={submitForm}
                         >
                             Save

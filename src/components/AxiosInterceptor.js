@@ -18,7 +18,16 @@ ax.interceptors.request.use(function (config)
 {
     //debugger
 
-        console.log(JSON.stringify(error, null, 3))
+        let e = JSON.stringify(error, null, 3)
+
+        console.log(JSON.stringify(error))
+
+        toast.error(
+            <div>An error occurred. Please, contact the developer.<br />
+                Details: {error.message}
+            </div>, {
+                position: toast.POSITION.TOP_CENTER
+            });
 
     // Do something with request error
     return Promise.reject(error)
@@ -34,9 +43,19 @@ ax.interceptors.response.use(function (response)
     return response
 }, function (error)
 {
-    //debugger
+    debugger
 
-        console.log(JSON.stringify(error, null, 3))
+        let e = JSON.stringify(error, null, 3)
+
+        console.log(JSON.stringify(error))
+
+        toast.error(
+            <div>An error occurred. Please, contact the developer.<br />
+                Details: {error.message}
+            </div>, {
+            position: toast.POSITION.TOP_CENTER
+        });
+        
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
     return Promise.reject(error)

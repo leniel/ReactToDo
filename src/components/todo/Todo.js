@@ -4,7 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import { EnhancedTodoForm } from './TodoFormWithFormik';
 import ApiService from "../../service/TodoService";
 import { withTheme } from '@material-ui/core/styles';
-import EnhancedTable from '../EnhancedTable'
+import EnhancedTable from './EnhancedTable'
 import { toast } from 'react-toastify';
 
 const emptyTodo = { name: '', dueDate: null, priority: '' }
@@ -17,7 +17,8 @@ class Todo extends Component
 
         this.state = {
             todos: [],
-            todo: emptyTodo
+            todo: emptyTodo,
+            filter: null
         }
     }
 
@@ -95,19 +96,28 @@ class Todo extends Component
         this.setState({ todo: emptyTodo });
     }
 
+    searchTodo = (search) =>
+    {
+        //debugger
+
+        console.log('Searching todo with text = ' + search)
+
+        this.setState({filter: search})
+    }
+
     loadTodo = id =>
     {
         if (id)
-        {           
+        {
             console.log('Loading todo with id = ' + id)
 
             const { todos } = this.state
 
             let todo = todos.find(todo => todo.id === id)
-            
+
             //debugger;
 
-            this.setState({todo: todo})
+            this.setState({ todo: todo })
         }
         else
         {
@@ -161,33 +171,41 @@ class Todo extends Component
 
     render()
     {
-        const { todos, todo } = this.state;
+        const { todos, todo, filter } = this.state;
+
+        const todosToShow = filter
+            ? todos.filter(todo => todo.name.toLowerCase().includes(filter.toLowerCase()))
+            : todos
 
         // console.log(this.props.theme.Paper)
 
         return (
 
-            <Grid container justify="flex-end" alignItems="center" spacing={2} lg={12}>
-                    <Grid item xs={12} lg={4}>
-                        <Paper style={this.props.theme.Paper}>
-                        <EnhancedTodoForm onSubmit={this.saveTodo} todo={todo} resetTodo={this.resetTodo} />
-                        </Paper>
-                    </Grid>
-
-                    {/* {console.log(todos)} */}
-
-                    <Grid item xs={12} lg={6}>
-                        <Paper style={this.props.theme.Paper}>
-
-                            <EnhancedTable
-                                todos={todos}
-                                deleteTodo={this.deleteTodo}
-                                completeTodo={this.completeTodo}
-                                loadTodo={this.loadTodo}
-                            />
-                        </Paper>
-                    </Grid>
+            <Grid container justify="flex-end" spacing={2} lg={12}>
+                <Grid item xs={12} lg={4} alignItems="center" style={{ marginTop: 16 }}>
+                    <Paper style={this.props.theme.Paper}>
+                        <EnhancedTodoForm
+                            onSubmit={this.saveTodo}
+                            todo={todo}
+                            resetTodo={this.resetTodo} />
+                    </Paper>
                 </Grid>
+
+                {/* {console.log(todos)} */}
+
+                <Grid item xs={12} lg={6}>
+                    <Paper style={this.props.theme.Paper}>
+
+                        <EnhancedTable
+                            todos={todosToShow}
+                            deleteTodo={this.deleteTodo}
+                            completeTodo={this.completeTodo}
+                            loadTodo={this.loadTodo}
+                            searchTodo={this.searchTodo}
+                        />
+                    </Paper>
+                </Grid>
+            </Grid>
         )
     }
 }

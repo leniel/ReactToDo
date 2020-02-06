@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import { lighten, makeStyles } from '@material-ui/core/styles';
+import { lighten, darken, makeStyles, useTheme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -21,8 +21,15 @@ import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CheckIcon from '@material-ui/icons/Check';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import LastPageIcon from '@material-ui/icons/LastPage';
+import FirstPageIcon from '@material-ui/icons/FirstPage';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import InputAdornment from "@material-ui/core/InputAdornment";
+import SearchIcon from "@material-ui/icons/Search";
+import TextField from "@material-ui/core/TextField";
 import moment from 'moment'
-import { priority } from './constants'
+import { priority } from '../constants'
 import EditIcon from '@material-ui/icons/Edit';
 import { withTheme } from '@material-ui/core/styles';
 
@@ -140,12 +147,19 @@ const useToolbarStyles = makeStyles(theme => ({
     title: {
         // flex: '1 1 100%',
     },
+    multilineColor: {
+        color: theme.palette.primary.light,
+        //backgroundColor: theme.palette.secondary.dark,
+        paddingLeft: 10,
+        width: 300,
+        alignItems: "center"
+    }
 }));
 
 const EnhancedTableToolbar = props =>
 {
     const classes = useToolbarStyles();
-    let { numSelected, selected, setSelected, deleteTodo, completeTodo } = props;
+    let { numSelected, selected, setSelected, deleteTodo, completeTodo, searchTodo } = props;
 
     // console.log(selected)
 
@@ -167,7 +181,7 @@ const EnhancedTableToolbar = props =>
                     <Tooltip title="Complete">
                         <IconButton aria-label="completed" onClick={() =>
                         {
-                            props.completeTodo(selected)
+                            completeTodo(selected)
 
                             setSelected([])
                         }}>
@@ -177,7 +191,7 @@ const EnhancedTableToolbar = props =>
                 <Tooltip title="Delete">
                     <IconButton aria-label="delete" onClick={() =>
                     {
-                        props.deleteTodo(selected)
+                        deleteTodo(selected)
 
                         setSelected([])
                     }}>
@@ -186,11 +200,28 @@ const EnhancedTableToolbar = props =>
                 </Tooltip>
                     </>
             ) : (
-                    <Tooltip title="Filter list">
-                        <IconButton aria-label="filter list">
-                            <FilterListIcon />
-                        </IconButton>
-                    </Tooltip>
+                    <TextField
+                        type="search"
+                        label="Search todo"
+                        // variant="filled"
+                        // margin="normal"
+                        color="primary"
+                        onChange={(i) => { searchTodo(i.target.value) }}
+                        InputProps={{
+                            className: classes.multilineColor,
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            )
+                        }}
+                    />
+
+                    // <Tooltip title="Filter list">
+                    //     <IconButton aria-label="filter list" onClick="">
+                    //         <FilterListIcon />
+                    //     </IconButton>
+                    // </Tooltip>
                 )}
         </Toolbar>
     );
@@ -225,6 +256,9 @@ const useStyles = makeStyles(theme => ({
         position: 'absolute',
         top: 20,
         width: 1,
+    },
+    container: {
+        height: 345,
     },
 }));
 
@@ -325,14 +359,16 @@ function EnhancedTable(props)
                     selected={selected}
                     deleteTodo={props.deleteTodo}
                     completeTodo={props.completeTodo}
+                    searchTodo={props.searchTodo}
                     setSelected={setSelected}
                     theme={props.theme}/>
-                <TableContainer>
+                <TableContainer className={classes.container}>
                     <Table
                         className={classes.table}
                         aria-labelledby="tableTitle"
                         size={dense ? 'small' : 'medium'}
                         aria-label="enhanced table"
+                        stickyHeader
                         
                     >
                         <EnhancedTableHead
@@ -398,13 +434,14 @@ function EnhancedTable(props)
                     </Table>
                 </TableContainer>
                 <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
+                    rowsPerPageOptions={[5, 10, 25, { value: props.todos.length, label: 'All' }]}
                     component="div"
                     count={props.todos.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onChangePage={handleChangePage}
                     onChangeRowsPerPage={handleChangeRowsPerPage}
+                    ActionsComponent={TablePaginationActions}
                 />
                 <FormControlLabel
                     control={<Switch checked={dense} onChange={handleChangeDense} />}
@@ -414,5 +451,77 @@ function EnhancedTable(props)
         </div>
     );
 }
+
+function TablePaginationActions(props)
+{
+    const theme = useTheme();
+
+    const useStyles1 = makeStyles(theme => ({
+        root: {
+            flexShrink: 0,
+            marginLeft: theme.spacing(2.5),
+        },
+    }));
+
+    const classes = useStyles1();
+
+    const { count, page, rowsPerPage, onChangePage } = props;
+
+    const handleFirstPageButtonClick = event =>
+    {
+        onChangePage(event, 0);
+    };
+
+    const handleBackButtonClick = event =>
+    {
+        onChangePage(event, page - 1);
+    };
+
+    const handleNextButtonClick = event =>
+    {
+        onChangePage(event, page + 1);
+    };
+
+    const handleLastPageButtonClick = event =>
+    {
+        onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+    };
+
+    return (
+        <div className={classes.root}>
+            <IconButton
+                onClick={handleFirstPageButtonClick}
+                disabled={page === 0}
+                aria-label="first page"
+            >
+                {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+            </IconButton>
+            <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+                {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+            </IconButton>
+            <IconButton
+                onClick={handleNextButtonClick}
+                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                aria-label="next page"
+            >
+                {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+            </IconButton>
+            <IconButton
+                onClick={handleLastPageButtonClick}
+                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                aria-label="last page"
+            >
+                {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+            </IconButton>
+        </div>
+    );
+}
+
+TablePaginationActions.propTypes = {
+    count: PropTypes.number.isRequired,
+    onChangePage: PropTypes.func.isRequired,
+    page: PropTypes.number.isRequired,
+    rowsPerPage: PropTypes.number.isRequired,
+};
 
 export default withTheme(EnhancedTable);
