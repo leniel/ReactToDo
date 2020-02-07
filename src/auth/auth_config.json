@@ -1,0 +1,6 @@
+{
+    "domain": "dev-c8e8wu8m.auth0.com",
+    "clientId": "FTiqxb6hTeGnDkUt7NVz0ajEwSCHwsbF",
+    "callbackUrl": "http://localhost:3000",
+    "logoutRedirect": "http://localhost:3000"
+}

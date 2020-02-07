@@ -1,4 +1,5 @@
-import React from 'react';
+import React from 'react'
+import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -16,9 +17,14 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import logo from '../logo.svg';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import { Link }  from "react-router-dom";
+import { Link, Route, withRouter }  from "react-router-dom";
 import { routes } from './routes'
 import Icon from '@material-ui/core/Icon'
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
+import Avatar from '@material-ui/core/Avatar';
+import { useAuth0 } from '../auth/Auth';
+import config from "../auth/auth_config.json";
 
 const drawerWidth = 200;
 
@@ -76,13 +82,54 @@ const useStyles = makeStyles(theme => ({
         }),
         marginLeft: 0,
     },
+    large: {
+        width: theme.spacing(6),
+        height: theme.spacing(6),
+    },
+    login:
+    {
+        fontSize: 16
+    }
 }));
 
-export default function PersistentDrawerLeft()
+function PersistentDrawerLeft(props)
 {
     const classes = useStyles();
     const theme = useTheme();
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
+
+    const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+
+    // useEffect(() =>
+    // {
+    //     const doSomething = async () =>
+    //     {
+    //         console.log(isAuthenticated);
+    //     };
+    //     if (!loading)
+    //     {
+    //         doSomething();
+    //     }
+    // }, [loading, alert('hey')]);
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    
+    const openMenu = Boolean(anchorEl);
+
+    // const handleChange = event =>
+    // {
+    //     setAuth(event.target.checked);
+    // };
+
+    const handleMenu = event =>
+    {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () =>
+    {
+        setAnchorEl(null);
+    };
 
     const handleDrawerOpen = () =>
     {
@@ -97,13 +144,24 @@ export default function PersistentDrawerLeft()
     return (
 
         <div className={classes.root}>
+
+{/* 
+            {
+
+                console.log(user) }
+                    console.log(isAuthenticated)
+        console.log(loginWithRedirect)
+        console.log(logout)
+            
+        } */}
+
             <CssBaseline />
             <AppBar
                 position="fixed"
                 // className={clsx(classes.appBar, {
                 //     [classes.appBarShift]: open,
                 // })}
-            >
+            >                
                 <Toolbar>
                     <IconButton
                         color="inherit"
@@ -118,14 +176,58 @@ export default function PersistentDrawerLeft()
                     <Typography variant="h6" style={{ flex: 1 }}>
                         React To Do
                 </Typography >
-                    <IconButton
-                        edge="end"
-                        aria-label="account of current user"
-                        aria-haspopup="true"
-                        color="inherit"
-                    >
-                        <AccountCircle />
-                    </IconButton>
+                        <div>
+                            <IconButton
+                                aria-label="account of current user"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                onClick={handleMenu}
+                            color="inherit"
+                            className={classes.login}
+                        >
+                            {isAuthenticated ?
+                                <>
+                                <Avatar
+                                    lt={user.name}
+                                    src={user.picture}
+                                        className={classes.large} />
+                                    <span>&nbsp;&nbsp;</span>
+                                    {user.name}
+                                    </>
+                            :
+                                <AccountCircle className={classes.large} />
+
+                                }
+                            </IconButton>
+                            <Menu
+                                id="menu-appbar"
+                                anchorEl={anchorEl}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={openMenu}
+                                onClose={handleClose}
+                        >
+                            {isAuthenticated ?
+                                <>
+                                    <MenuItem onClick={handleClose}>My account</MenuItem>
+                                    <MenuItem onClick={handleClose}>Profile</MenuItem>
+                                    <MenuItem onClick={() => logout(
+                                        {
+                                            returnTo:config.logoutRedirect
+                                        }
+                                    )}>Sign Out</MenuItem>
+                                    </>
+                                :
+                                <MenuItem onClick={() => loginWithRedirect({})}>Sign In</MenuItem>}
+                            </Menu>
+                    </div>
                 </Toolbar>
             </AppBar>
 
@@ -155,6 +257,8 @@ export default function PersistentDrawerLeft()
                             <ListItemText primary={route.text} style={{marginLeft: "7px"}} />
                         </ListItem>
                     ))}
+                    {/* Callback route */}
+                    {/* <Route exact path='/callback' component={Callback} /> */}
                 </List>
                 {/* <Divider />
                 <List>
@@ -178,3 +282,5 @@ export default function PersistentDrawerLeft()
             </div>
     );
 }
+
+export default PersistentDrawerLeft

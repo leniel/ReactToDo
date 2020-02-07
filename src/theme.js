@@ -22,7 +22,7 @@ const theme = createMuiTheme({
             // root: {  // marginBottom: 16,
             //     backgroundColor: 'black', boxShadow: 'none'
             // },
-        },
+        }
     },
     palette: {
         type: 'light',

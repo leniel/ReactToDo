@@ -9,35 +9,33 @@ import { Switch, Route } from "react-router-dom";
 import { routes } from './components/routes'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useAuth0 } from './auth/Auth';
+import { LinearProgress } from '@material-ui/core';
 
-class App extends React.Component
+function App()
 {
-    constructor()
-    {
-        super()
+    const { loading } = useAuth0();
 
-        this.state = {
-            isLoggedIn: "false"
-        }
+    if (loading)
+    {
+        return <LinearProgress className="progress" />;
     }
 
-    render()
-    {
-        return (
+    return (
 
-            <ThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
 
-                <GlobalLoader />
-                
-                <div className="App">
+            <GlobalLoader />
 
-                    {/* Loading indicator */}
+            <div className="App">
 
-                    <Header />
+                {/* Loading indicator */}
 
-                    <ToastContainer />
+                <Header />
 
-                    <div className="main">
+                <ToastContainer />
+
+                <div className="main">
                     <Switch>
                         {routes.map((route, index) => (
                             <Route
@@ -47,18 +45,17 @@ class App extends React.Component
                                 component={route.component}
                             />
                         ))}
-                        </Switch>
-
-                    </div>
-
-                    <Footer />
+                    </Switch>
 
                 </div>
 
-            </ThemeProvider>
+                <Footer />
 
-        )
-    }
+            </div>
+
+        </ThemeProvider>
+
+    )
 }
 
 export default App;
