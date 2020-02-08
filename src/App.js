@@ -5,11 +5,12 @@ import Footer from './components/Footer';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { GlobalLoader } from './components/AxiosInterceptor'
 import { theme } from './theme'
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import { routes } from './components/routes'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth0 } from './auth/Auth';
+import PrivateRoute from './auth/PrivateRoute';
 import { LinearProgress } from '@material-ui/core';
 
 function App()
@@ -22,39 +23,60 @@ function App()
     }
 
     return (
+        <Router>
 
-        <ThemeProvider theme={theme}>
-
-            <GlobalLoader />
-
-            <div className="App">
+            <ThemeProvider theme={theme}>
 
                 {/* Loading indicator */}
+                <GlobalLoader />
 
-                <Header />
+                <div className="App">
 
-                <ToastContainer />
+                    <Header />
 
-                <div className="main">
-                    <Switch>
-                        {routes.map((route, index) => (
-                            <Route
-                                key={index}
-                                path={route.path}
-                                exact={route.exact}
-                                component={route.component}
-                            />
-                        ))}
-                    </Switch>
+                    <ToastContainer />
+
+                    <div className="main">
+
+                        <Switch>
+                            {routes.map((route, index) =>
+                            {
+                                if (!route.protected)
+                                {
+                                    return <Route
+                                        key={index}
+                                        path={route.path}
+                                        exact={route.exact}
+                                        component={route.component}
+                                    />
+                                }
+                                else
+                                {
+                                    return <PrivateRoute
+                                        key={index}
+                                        path={route.path}
+                                        exact={route.exact}
+                                        component={route.component} />
+                                }
+                            })}
+
+                            {/* <PrivateRoute
+                            // key={index}
+                            path="/todos"
+                            exact
+                            component={<Todo />} /> */}
+
+                        </Switch>
+
+                    </div>
+
+                    <Footer />
 
                 </div>
 
-                <Footer />
+            </ThemeProvider>
 
-            </div>
-
-        </ThemeProvider>
-
+        </Router>
     )
 }
 

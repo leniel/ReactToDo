@@ -1,4 +1,3 @@
-import React from 'react';
 import About from "./About";
 import Home from "./Home"
 import Todo from "./todo/Todo"
@@ -13,20 +12,21 @@ export const routes = [
         path: "/",
         icon: "home",
         exact: true,
-        component: () => <Home />
+        component: Home
     },
     {
         text: "Todos",
         path: "/todos",
         icon: "list",
-        component: () => <Todo />
+        exact: true,
+        protected: true,
+        component: Todo
     },
     {
         text: "About",
         path: "/about",
         icon: "info",
         exact: true,
-        component: () => <About />,
-        children: []
+        component: About
     }
 ];

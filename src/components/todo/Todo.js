@@ -173,6 +173,7 @@ class Todo extends Component
     {
         const { todos, todo, filter } = this.state;
 
+        // Filtering Todos
         const todosToShow = filter
             ? todos.filter(todo => todo.name.toLowerCase().includes(filter.toLowerCase()))
             : todos

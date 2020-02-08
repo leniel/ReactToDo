@@ -6,8 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
 using Microsoft.OpenApi.Models;
-using System;
-using System.IO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace TodoApi
 {
@@ -34,6 +33,17 @@ namespace TodoApi
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Todo API", Version = "v1" });
+            });
+
+            // 1. Add Authentication Services
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = "https://dev-c8e8wu8m.auth0.com/";
+                options.Audience = "todoapi";
             });
         }
 
@@ -68,6 +78,8 @@ namespace TodoApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

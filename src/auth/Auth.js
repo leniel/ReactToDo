@@ -6,6 +6,42 @@ const DEFAULT_REDIRECT_CALLBACK = () =>
 
 export const Auth0Context = React.createContext();
 export const useAuth0 = () => useContext(Auth0Context);
+
+let _initOptions, _client
+
+const getAuth0Client = () =>
+{
+    return new Promise(async (resolve, reject) =>
+    {
+        let client
+
+        if (!client)
+        {
+            try
+            {
+                _client = await createAuth0Client(_initOptions)
+
+                resolve(_client)
+            } catch (e)
+            {
+                console.log(e);
+
+                reject(new Error('getAuth0Client error', e))
+            }
+        }
+    })
+}
+
+export const getTokenSilently = async (...p) =>
+{
+    if (!_client)
+    {
+        _client = await getAuth0Client()
+    }
+
+    return await _client.getTokenSilently(...p);
+}
+
 export const Auth0Provider = ({
     children,
     onRedirectCallback = DEFAULT_REDIRECT_CALLBACK,
@@ -22,31 +58,38 @@ export const Auth0Provider = ({
     {
         const initAuth0 = async () =>
         {
-            const auth0FromHook = await createAuth0Client(initOptions);
+            _initOptions = initOptions;
 
-            setAuth0(auth0FromHook);
+            const client = await getAuth0Client(initOptions)
+
+            //const auth0FromHook = await createAuth0Client(initOptions);
+
+            setAuth0(client);
 
             if (window.location.search.includes("code=") &&
-                window.location.search.includes("state=")
-            )
+                window.location.search.includes("state="))
             {
-                const { appState } = await auth0FromHook.handleRedirectCallback();
+                console.log("Found code")
+
+                const { appState } = await client.handleRedirectCallback();
 
                 onRedirectCallback(appState);
             }
 
-            const isAuthenticated = await auth0FromHook.isAuthenticated();
+            const isAuthenticated = await client.isAuthenticated();
 
             setIsAuthenticated(isAuthenticated);
 
             if (isAuthenticated)
             {
-                const user = await auth0FromHook.getUser();
+                const user = await client.getUser();
+
                 setUser(user);
             }
 
             setLoading(false);
         };
+
         initAuth0();
         // eslint-disable-next-line
     }, []);

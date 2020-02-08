@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { BrowserRouter } from "react-router-dom";
 import { Auth0Provider } from './auth/Auth'
 import config from "./auth/auth_config.json";
 import history from "./utils/history";
@@ -26,10 +25,12 @@ ReactDOM.render(
         domain={config.domain}
         client_id={config.clientId}
         redirect_uri={config.callbackUrl}
-        onRedirectCallback={onRedirectCallback}>
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
+        onRedirectCallback={onRedirectCallback}
+        scope={config.scope}
+        responseType={config.responseType}
+        audience={config.audience}
+    >
+        <App />
     </Auth0Provider>,
     document.getElementById('root'));
 

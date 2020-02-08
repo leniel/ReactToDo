@@ -2,18 +2,25 @@ import React from "react";
 import axios from "axios";
 import { LinearProgress } from '@material-ui/core';
 import { toast } from 'react-toastify';
+import { getTokenSilently } from '../auth/Auth';
 
 const { useState, useCallback, useMemo, useEffect } = React;
 
-let ax = axios.create();
+let ax = axios.create()
 
 // Add a request interceptor
-ax.interceptors.request.use(function (config)
+ax.interceptors.request.use(async config =>
 {
+    // Do something before request is sent
+
     //debugger
 
-    // Do something before request is sent
+    let token = await getTokenSilently()
+
+    config.headers.Authorization = `Bearer ${token}`;
+
     return config;
+
 }, function (error)
 {
     //debugger
@@ -41,9 +48,10 @@ ax.interceptors.response.use(function (response)
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
     return response
+    
 }, function (error)
 {
-    debugger
+    //debugger
 
         let e = JSON.stringify(error, null, 3)
 
@@ -79,16 +87,19 @@ const useAxiosLoader = () =>
             request: config =>
             {
                 inc();
+
                 return config;
             },
             response: response =>
             {
                 dec();
+
                 return response;
             },
             error: error =>
             {
                 dec();
+
                 return Promise.reject(error);
             }
         }),
