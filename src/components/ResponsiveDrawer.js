@@ -17,7 +17,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import logo from '../logo.svg';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import { Link, Route, withRouter }  from "react-router-dom";
+import { Link, Route, withRouter } from "react-router-dom";
 import { routes } from './routes'
 import Icon from '@material-ui/core/Icon'
 import MenuItem from '@material-ui/core/MenuItem';
@@ -113,7 +113,7 @@ function PersistentDrawerLeft(props)
     // }, [loading, alert('hey')]);
 
     const [anchorEl, setAnchorEl] = useState(null);
-    
+
     const openMenu = Boolean(anchorEl);
 
     // const handleChange = event =>
@@ -145,7 +145,7 @@ function PersistentDrawerLeft(props)
 
         <div className={classes.root}>
 
-{/* 
+            {/* 
             {
 
                 console.log(user) }
@@ -158,10 +158,10 @@ function PersistentDrawerLeft(props)
             <CssBaseline />
             <AppBar
                 position="fixed"
-                // className={clsx(classes.appBar, {
-                //     [classes.appBarShift]: open,
-                // })}
-            >                
+            // className={clsx(classes.appBar, {
+            //     [classes.appBarShift]: open,
+            // })}
+            >
                 <Toolbar>
                     <IconButton
                         color="inherit"
@@ -176,57 +176,60 @@ function PersistentDrawerLeft(props)
                     <Typography variant="h6" style={{ flex: 1 }}>
                         React To Do
                 </Typography >
-                        <div>
-                            <IconButton
-                                aria-label="account of current user"
-                                aria-controls="menu-appbar"
-                                aria-haspopup="true"
-                                onClick={handleMenu}
+                    <div>
+                        <IconButton
+                            aria-label="account of current user"
+                            aria-controls="menu-appbar"
+                            aria-haspopup="true"
+                            onClick={handleMenu}
                             color="inherit"
                             className={classes.login}
                         >
                             {isAuthenticated ?
                                 <>
-                                <Avatar
-                                    lt={user.name}
-                                    src={user.picture}
+                                    <Avatar
+                                        lt={user.name}
+                                        src={user.picture}
                                         className={classes.large} />
                                     <span>&nbsp;&nbsp;</span>
                                     {user.name}
-                                    </>
-                            :
+                                </>
+                                :
                                 <AccountCircle className={classes.large} />
 
-                                }
-                            </IconButton>
-                            <Menu
-                                id="menu-appbar"
-                                anchorEl={anchorEl}
-                                anchorOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                open={openMenu}
-                                onClose={handleClose}
+                            }
+                        </IconButton>
+                        <Menu
+                            id="menu-appbar"
+                            anchorEl={anchorEl}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={openMenu}
+                            onClose={handleClose}
                         >
                             {isAuthenticated ?
                                 <>
-                                    <MenuItem onClick={handleClose}>My account</MenuItem>
-                                    <MenuItem onClick={handleClose}>Profile</MenuItem>
+                                    {/* <MenuItem onClick={handleClose}>My account</MenuItem> */}
+                                    <MenuItem
+                                        onClick={handleClose}
+                                        component={Link}
+                                        to={'/profile'}>Profile</MenuItem>
                                     <MenuItem onClick={() => logout(
                                         {
-                                            returnTo:config.logoutRedirect
+                                            returnTo: config.logoutRedirect
                                         }
                                     )}>Sign Out</MenuItem>
-                                    </>
+                                </>
                                 :
                                 <MenuItem onClick={() => loginWithRedirect({})}>Sign In</MenuItem>}
-                            </Menu>
+                        </Menu>
                     </div>
                 </Toolbar>
             </AppBar>
@@ -247,16 +250,21 @@ function PersistentDrawerLeft(props)
                 </div>
                 <Divider />
                 <List>
-                    {routes.map((route, index) => (
-                        <ListItem button
-                            key={route.text}
-                            component={Link}
-                            to={route.path}
-                            onClick={handleDrawerClose}>
-                            <Icon>{route.icon}</Icon>
-                            <ListItemText primary={route.text} style={{marginLeft: "7px"}} />
-                        </ListItem>
-                    ))}
+                    {routes.map((route, index) =>
+                    {
+                        if (route.drawer)
+                        {
+                            return (
+                                <ListItem button
+                                    key={route.text}
+                                    component={Link}
+                                    to={route.path}
+                                    onClick={handleDrawerClose}>
+                                    <Icon>{route.icon}</Icon>
+                                    <ListItemText primary={route.text} style={{ marginLeft: "7px" }} />
+                                </ListItem>)
+                        }
+                    })}
                     {/* Callback route */}
                     {/* <Route exact path='/callback' component={Callback} /> */}
                 </List>
@@ -279,7 +287,7 @@ function PersistentDrawerLeft(props)
                 <div className={classes.drawerHeader} />
             </main>
 
-            </div>
+        </div>
     );
 }
 

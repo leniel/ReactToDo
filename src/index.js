@@ -26,10 +26,9 @@ ReactDOM.render(
         client_id={config.clientId}
         redirect_uri={config.callbackUrl}
         onRedirectCallback={onRedirectCallback}
-        scope={config.scope}
-        responseType={config.responseType}
+        response_type={config.responseType}
         audience={config.audience}
-    >
+        scope={config.scope}>
         <App />
     </Auth0Provider>,
     document.getElementById('root'));

@@ -1,6 +1,7 @@
 import About from "./About";
 import Home from "./Home"
 import Todo from "./todo/Todo"
+import Profile from "./user/Profile"
 
 // We are going to use this route config in 2
 // spots: once for the sidebar and once in the main
@@ -12,7 +13,8 @@ export const routes = [
         path: "/",
         icon: "home",
         exact: true,
-        component: Home
+        component: Home,
+        drawer: true
     },
     {
         text: "Todos",
@@ -20,13 +22,23 @@ export const routes = [
         icon: "list",
         exact: true,
         protected: true,
-        component: Todo
+        component: Todo,
+        drawer: true
     },
     {
         text: "About",
         path: "/about",
         icon: "info",
         exact: true,
-        component: About
+        component: About,
+        drawer: true
+    },
+    {
+        text: "Profile",
+        path: "/profile",
+        icon: "info",
+        protected: true,
+        component: Profile,
+        drawer: false
     }
 ];

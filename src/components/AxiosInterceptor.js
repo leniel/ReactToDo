@@ -17,6 +17,8 @@ ax.interceptors.request.use(async config =>
 
     let token = await getTokenSilently()
 
+    console.log('Token: ' + token)
+
     config.headers.Authorization = `Bearer ${token}`;
 
     return config;

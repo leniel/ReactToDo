@@ -7,11 +7,20 @@ using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TodoApi
 {
     public class Startup
     {
+        private List<string> Scopes = new List<string>(){
+    "read:todos",
+    "add:todos",
+    "edit:todos",
+    "delete:todos"
+        };
+
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
             Configuration = configuration;
@@ -35,16 +44,29 @@ namespace TodoApi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Todo API", Version = "v1" });
             });
 
-            // 1. Add Authentication Services
+            // Adding Authentication Services
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
-                options.Authority = "https://dev-c8e8wu8m.auth0.com/";
-                options.Audience = "todoapi";
+                options.Authority = $"https://{Configuration["Auth0:Domain"]}/";
+                options.Audience = Configuration["Auth0:Audience"];
             });
+
+            // Adding Authorization scopes
+            services.AddAuthorization(options =>
+            {
+                foreach (var scope in Scopes)
+                {
+                    options.AddPolicy(scope, policy => policy.Requirements.Add(new HasScopeRequirement(scope,
+            $"https://{Configuration["Auth0:Domain"]}/")));
+                }
+            });
+
+            // Register the scope authorization handler
+            services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

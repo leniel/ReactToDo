@@ -22,7 +22,7 @@ namespace TodoApi.Controllers
         // GET: api/TodoItems
         [HttpGet]
         [Route("")]
-        [Authorize]
+        [Authorize("read:todos")]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
             return await _context.TodoItems.ToListAsync();
