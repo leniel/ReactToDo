@@ -3,7 +3,6 @@
     "clientId": "FTiqxb6hTeGnDkUt7NVz0ajEwSCHwsbF",
     "callbackUrl": "http://localhost:3000",
     "logoutRedirect": "http://localhost:3000",
-    // "responseType": "token id_token",
     "audience": "todoapi",
-    "scope": "read:todos"
+    "scope": "email read:todos"
 }

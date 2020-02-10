@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +26,13 @@ namespace TodoApi.Controllers
         [Authorize("read:todos")]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
-            return await _context.TodoItems.ToListAsync();
-        }
+            // Custom claim passed through an Auth0 rule.
+            // More info: https://auth0.com/docs/rules
+            var user = ((ClaimsIdentity)HttpContext.User.Identity).
+            FindFirst(c => c.Type == "https://reacttodo.com/email").Value;
 
+            return await _context.TodoItems.Where(todo => todo.User == user).ToListAsync();
+        }
 
         [HttpGet]
         [Route("Count")]

@@ -39,9 +39,19 @@ export const getTokenSilently = async (...p) =>
         _client = await getAuth0Client()
     }
 
-    return await _client.getTokenSilently(...p);
+    return await _client.getTokenSilently(...p)
 }
 
+export const getUser = async () =>
+{
+    if (!_client)
+    {
+        _client = await getAuth0Client()
+    }
+
+    return await _client.getUser()
+}
+    
 export const Auth0Provider = ({
     children,
     onRedirectCallback = DEFAULT_REDIRECT_CALLBACK,

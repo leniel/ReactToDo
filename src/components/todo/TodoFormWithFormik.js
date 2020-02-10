@@ -159,6 +159,7 @@ export const EnhancedTodoForm = withFormik({
         id: props.todo.id,
         name: props.todo.name,
         dueDate: props.todo.dueDate,
+        user: props.todo.user,
         priority: props.todo.priority,
         resetTodo: props.resetTodo,
         onSubmit: props.onSubmit

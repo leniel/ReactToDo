@@ -4,8 +4,9 @@ import Paper from '@material-ui/core/Paper';
 import { EnhancedTodoForm } from './TodoFormWithFormik';
 import ApiService from "../../service/TodoService";
 import { withTheme } from '@material-ui/core/styles';
-import EnhancedTable from './EnhancedTable'
+import EnhancedTable from './EnhancedTable';
 import { toast } from 'react-toastify';
+import { getUser } from "../../auth/Auth";
 
 const emptyTodo = { name: '', dueDate: null, priority: '' }
 
@@ -18,12 +19,20 @@ class Todo extends Component
         this.state = {
             todos: [],
             todo: emptyTodo,
-            filter: null
+            filter: null,
+            user: null
         }
     }
 
     async componentDidMount()
     {
+        let user = await getUser()
+
+        //debugger
+
+        // Assigning the current logged in User to the state
+        this.setState({ user: user })
+        
         // Get todos from Web API
         ApiService.getTodos()
             .then((res) =>
@@ -42,6 +51,13 @@ class Todo extends Component
 
     addTodo = todo =>
     {
+        //debugger
+
+        const { user } = this.state
+
+        // Assigning the User associated with this todo
+        todo.user = user.email
+
         ApiService.addTodo(todo).then(
             res =>
             {
