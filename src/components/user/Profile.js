@@ -12,7 +12,7 @@ import { useAuth0 } from "../../auth/Auth";
 const useStyles = makeStyles({
     root: {
         maxWidth: 500
-    },
+    }
 });
 
 const Profile = () =>
@@ -26,10 +26,10 @@ const Profile = () =>
             <CardActionArea>
                 <CardMedia
                     component="img"
-                    alt="Contemplative Reptile"
-                    height="140"
+                    alt="Profile"
+                    height="300"
                     image={user.picture}
-                    title="Contemplative Reptile"
+                    title="Profile"
                 />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="h2">

@@ -23,7 +23,7 @@ namespace TodoApi.Controllers
         // GET: api/TodoItems
         [HttpGet]
         [Route("")]
-        [Authorize("read:todos")]
+        [Authorize("read:todos", Roles="Reader")]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
             // Custom claim passed through an Auth0 rule.
@@ -43,6 +43,7 @@ namespace TodoApi.Controllers
 
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
+        [Authorize("edit:todos", Roles = "Editor")]
         public async Task<ActionResult<TodoItem>> GetTodoItem(long id)
         {
             var todoItem = await _context.TodoItems.FindAsync(id);
@@ -59,6 +60,7 @@ namespace TodoApi.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
+        [Authorize("edit:todos", Roles = "Editor")]
         public async Task<IActionResult> PutTodoItem(long id, TodoItem todoItem)
         {
             if (id != todoItem.Id)
@@ -91,6 +93,7 @@ namespace TodoApi.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
+        [Authorize("add:todos", Roles = "Creator")]
         public async Task<ActionResult<TodoItem>> PostTodoItem([FromBody]TodoItem todoItem)
         {
             _context.TodoItems.Add(todoItem);
@@ -103,6 +106,7 @@ namespace TodoApi.Controllers
 
         // DELETE: api/TodoItems/5
         [HttpDelete("{id}")]
+        [Authorize("delete:todos", Roles = "Deleter")]
         public async Task<ActionResult<TodoItem>> DeleteTodoItem(long id)
         {
             var todoItem = await _context.TodoItems.FindAsync(id);

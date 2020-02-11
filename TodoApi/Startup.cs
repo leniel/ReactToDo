@@ -9,18 +9,18 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
-using System;
+using Microsoft.IdentityModel.Tokens;
 
 namespace TodoApi
 {
     public class Startup
     {
-        private List<string> Scopes = new List<string>(){
-    "read:todos",
-    "add:todos",
-    "edit:todos",
-    "delete:todos"
-        };
+        private List<(string Scope, string Role)> ScopesWithRoles = new List<(string Scope, string Role)>(){
+                (Scope: "read:todos", Role: "Reader"),
+                (Scope: "add:todos", Role: "Creator"),
+                (Scope: "edit:todos", Role: "Editor"),
+                (Scope: "delete:todos", Role: "Deleter"),
+            };
 
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
@@ -80,19 +80,29 @@ namespace TodoApi
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
             }).AddJwtBearer(options =>
             {
                 options.Authority = $"https://{Configuration["Auth0:Domain"]}/";
                 options.Audience = Configuration["Auth0:Audience"];
+
+                // Roles comes from a custom claim added through a Rule in Auth0
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    RoleClaimType = "https://reacttodo.com/roles"
+                };
             });
 
             // Adding Authorization scopes
             services.AddAuthorization(options =>
             {
-                foreach (var scope in Scopes)
+                foreach (var scope in ScopesWithRoles)
                 {
-                    options.AddPolicy(scope, policy => policy.Requirements.Add(new HasScopeRequirement(scope,
+                    options.AddPolicy(scope.Scope, policy => policy.Requirements.Add(new HasScopeRequirement(scope.Scope,
             $"https://{Configuration["Auth0:Domain"]}/")));
+
+                    options.AddPolicy(scope.Scope, policy =>
+                       policy.RequireRole(scope.Role));
                 }
             });
 

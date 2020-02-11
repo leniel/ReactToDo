@@ -157,6 +157,10 @@ class Todo extends Component
                     this.setState(prevState => ({
                         todos: prevState.todos.filter(todo => todo.id != deletedTodo.id)
                     }));
+
+                    toast.success("Todo deleted.", {
+                        position: toast.POSITION.TOP_CENTER
+                    });
                 })
         })
     }
@@ -181,6 +185,10 @@ class Todo extends Component
                     this.setState(prevState => ({
                         todos: todos
                     }));
+
+                    toast.success("Todo(s) complete changed.", {
+                        position: toast.POSITION.TOP_CENTER
+                    });
                 })
         })
     }
