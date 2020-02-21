@@ -9,7 +9,7 @@ function Copyright()
     return (
         <Typography variant="body2" color="textSecondary">
             {'Copyright © '}
-            <Link color="inherit" href="https://leniel.net/">
+            <Link color="inherit" href="https://leniel.net/" target="_blank">
                 Leniel.net
       </Link>{' '}
             {new Date().getFullYear()}
@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
     footer: {
         //color: 'white',
         padding: theme.spacing(3, 2),
-        marginTop: 'auto',
+        marginTop: '16px',
         backgroundColor:
             theme.palette.type === 'dark' ? theme.palette.grey[800] : theme.palette.grey[300],
     },

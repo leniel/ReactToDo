@@ -43,7 +43,7 @@ namespace TodoApi.Controllers
 
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
-        [Authorize("edit:todos", Roles = "Editor")]
+        [Authorize("read:todos", Roles = "Reader")]
         public async Task<ActionResult<TodoItem>> GetTodoItem(long id)
         {
             var todoItem = await _context.TodoItems.FindAsync(id);
