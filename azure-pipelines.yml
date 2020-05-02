@@ -18,4 +18,4 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    projects: 'TodoApi/TodoApi.csproj/test.csproj'
+    projects: '/TodoApi/TodoApi.csproj/test.csproj'
