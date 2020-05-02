@@ -4,35 +4,47 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- '*'
+  - "*"
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: "ubuntu-latest"
   demands:
-  - npm
+    - npm
 
 variables:
-  buildConfiguration: 'Release'
+  buildConfiguration: "Release"
 
 steps:
+  - task: Npm@1
+    displayName: "Run npm install"
+    inputs:
+      verbose: false
 
-- task: Npm@1
-  displayName: 'Run npm install'
-  inputs:
-    verbose: false
+  - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
+    displayName: "Write build info"
 
-- script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
-  displayName: 'Write build info'
+  - task: DotNetCoreCLI@2
+    displayName: "Restore project dependencies"
+    inputs:
+      command: "restore"
+      projects: "**/*.csproj"
 
-- task: DotNetCoreCLI@2
-  displayName: 'Restore project dependencies'
-  inputs:
-    command: 'restore'
-    projects: '**/*.csproj'
+  - task: DotNetCoreCLI@2
+    displayName: "Build the project - Release"
+    inputs:
+      command: build
+      projects: "**/*.csproj"
+      arguments: "--configuration Release"
 
-- task: DotNetCoreCLI@2
-  displayName: 'Build the project - Release'
-  inputs:
-    command: build
-    projects: '**/*.csproj'
-    arguments: '--configuration Release'
+  - task: DotNetCoreCLI@2
+    displayName: "Publish the project - Release"
+    inputs:
+      command: "publish"
+      projects: "**/*.csproj"
+      publishWebProjects: false
+      arguments: "--no-build --configuration Release --output $(Build.ArtifactStagingDirectory)/Release"
+      zipAfterPublish: true
+
+  - task: PublishBuildArtifacts@1
+    displayName: "Publish Artifact: drop"
+    condition: succeeded()
