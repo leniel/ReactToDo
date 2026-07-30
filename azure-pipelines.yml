@@ -16,9 +16,16 @@ variables:
   wwwrootDir: 'public'
 
 steps:
+  - task: NodeTool@0
+    displayName: "Use Node.js"
+    inputs:
+      versionSpec: '20.x'
+
   - task: Npm@1
     displayName: "Run npm install"
     inputs:
+      command: 'custom'
+      customCommand: 'install --legacy-peer-deps'
       verbose: false
 
   - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
