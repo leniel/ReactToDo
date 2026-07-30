@@ -7,14 +7,12 @@
     },
     "extends": [
         "eslint:recommended",
-        "plugin:react/recommended",
-        "plugin:@typescript-eslint/eslint-recommended"
+        "plugin:react/recommended"
     ],
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
     },
-    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
@@ -23,8 +21,7 @@
         "sourceType": "module"
     },
     "plugins": [
-        "react",
-        "@typescript-eslint"
+        "react"
     ],
     "rules": {
         "no-const-assign": "warn",
@@ -34,6 +31,11 @@
         "no-unused-vars": "warn",
         "constructor-super": "warn",
         "valid-typeof": "warn",
-        "no-extra-semi":"error"
+        "no-extra-semi": "error"
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
     }
 }

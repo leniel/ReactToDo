@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { LinearProgress } from '@material-ui/core';
+import { LinearProgress } from '@mui/material';
 import { toast } from 'react-toastify';
 import { getTokenSilently } from '../auth/Auth';
 

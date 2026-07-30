@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import { EnhancedTodoForm } from './TodoFormWithFormik';
 import ApiService from "../../service/TodoService";
-import { withTheme } from '@material-ui/core/styles';
 import EnhancedTable from './EnhancedTable';
 import { toast } from 'react-toastify';
 import { getUser } from "../../auth/Auth";
@@ -205,8 +204,7 @@ class Todo extends Component
         // console.log(this.props.theme.Paper)
 
         return (
-
-            <Grid container justify="flex-end" spacing={2} lg={12}>
+            <Grid container justifyContent="flex-end" spacing={2} lg={12}>
                 <Grid item xs={12} lg={4} alignItems="center" style={{ marginTop: 16 }}>
                     <Paper style={this.props.theme.Paper}>
                         <EnhancedTodoForm
@@ -215,9 +213,7 @@ class Todo extends Component
                             resetTodo={this.resetTodo} />
                     </Paper>
                 </Grid>
-
                 {/* {console.log(todos)} */}
-
                 <Grid item xs={12} lg={6}>
                     <Paper style={this.props.theme.Paper}>
 
@@ -231,8 +227,8 @@ class Todo extends Component
                     </Paper>
                 </Grid>
             </Grid>
-        )
+        );
     }
 }
 
-export default withTheme(Todo);
+export default Todo;

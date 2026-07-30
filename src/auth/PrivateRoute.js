@@ -1,33 +1,28 @@
 import React, { useEffect } from "react";
-import { Route, Redirect } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAuth0 } from "./Auth";
 
-const PrivateRoute = ({ component: Component, path, ...rest }) =>
+const PrivateRoute = ({ children }) =>
 {
     const { loading, isAuthenticated, loginWithRedirect } = useAuth0();
+    const location = useLocation();
 
     useEffect(() =>
     {
-        if (loading || isAuthenticated)
-        {
-            return;
-        }
+        if (loading || isAuthenticated) return;
 
         const fn = async () =>
         {
             await loginWithRedirect({
-                appState: { targetUrl: path }
+                appState: { targetUrl: location.pathname }
             });
         };
 
         fn();
 
-    }, [loading, isAuthenticated, loginWithRedirect, path]);
+    }, [loading, isAuthenticated, loginWithRedirect, location.pathname]);
 
-    const render = props =>
-        isAuthenticated === true ? <Component {...props} /> : null;
-
-    return <Route path={path} render={render} {...rest} />;
+    return isAuthenticated === true ? children : null;
 };
 
 export default PrivateRoute;

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react"
 import * as Yup from 'yup';
-import { Button, MenuItem, LinearProgress, TextField } from '@material-ui/core';
+import { Button, MenuItem, LinearProgress, TextField } from '@mui/material';
 import { Formik, Form, Field } from 'formik';
 import DateFnsUtils from '@date-io/date-fns';
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { priority } from '../constants'
 
 export default function TodoForm(props)
@@ -28,9 +28,7 @@ export default function TodoForm(props)
     }, [props.todo])
 
     return (
-
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
-
             <Formik
                 validateOnMount={false} // Can validate the form up front with true
                 validateOnChange={true}
@@ -64,10 +62,8 @@ export default function TodoForm(props)
                 {
                     const { handleReset, initialValues, handleChange, values, errors, touched, handleSubmit, resetForm, submitForm, isSubmitting, setFieldValue, setValues } = props;
                     return (
-
                         <Form>
-
-                            <Grid container direction="column" justify="flex-start" spacing={4}>
+                            <Grid container direction="column" justifyContent="flex-start" spacing={4}>
 
                                 <Grid item xl={fieldSize} md={fieldSize} sm={fieldSize} xs={fieldSize}>
                                     <TextField
@@ -134,7 +130,7 @@ export default function TodoForm(props)
                                     md={fieldSize}
                                     sm={fieldSize}
                                     xs={fieldSize}
-                                    align="center" justify="stretch">
+                                    align="center" justifyContent="stretch">
 
                                     <Button
                                         variant="contained"
@@ -162,16 +158,13 @@ export default function TodoForm(props)
 
                                 </Grid>
                             </Grid>
-
                             {/* Useful during debugging - it shows all Formik props */}
                             {/* <pre>{JSON.stringify(props, null, 2)}</pre> */}
-
                         </Form>
                     );
                 }}
 
             </Formik>
-
         </MuiPickersUtilsProvider>
-    )
+    );
 }

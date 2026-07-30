@@ -2,82 +2,73 @@ import React from 'react';
 import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { GlobalLoader } from './components/AxiosInterceptor'
 import { theme } from './theme'
-import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
+import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
 import { routes } from './components/routes'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth0 } from './auth/Auth';
 import PrivateRoute from './auth/PrivateRoute';
-import { LinearProgress } from '@material-ui/core';
+import { LinearProgress } from '@mui/material';
 
 function App()
 {
     const { loading } = useAuth0();
 
-    if (loading)
-    {
-        return <LinearProgress className="progress" />;
-    }
+    if (loading) return <LinearProgress className="progress" />;
 
     return (
         <Router>
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={theme}>
 
-            <ThemeProvider theme={theme}>
+                    {/* Loading indicator */}
+                    <GlobalLoader />
 
-                {/* Loading indicator */}
-                <GlobalLoader />
+                    <div className="App">
 
-                <div className="App">
+                        <Header />
 
-                    <Header />
+                        <ToastContainer />
 
-                    <ToastContainer />
+                        <div className="main">
 
-                    <div className="main">
-
-                        <Switch>
-                            {routes.map((route, index) =>
-                            {
-                                if (!route.protected)
+                            <Routes>
+                                {routes.map((route, index) =>
                                 {
+                                    const Component = route.component;
+
+                                    if (!route.protected)
+                                        return <Route
+                                            key={index}
+                                            path={route.path}
+                                            element={<Component />}
+                                        />;
+                                    
                                     return <Route
                                         key={index}
                                         path={route.path}
-                                        exact={route.exact}
-                                        component={route.component}
-                                    />
-                                }
-                                else
-                                {
-                                    return <PrivateRoute
-                                        key={index}
-                                        path={route.path}
-                                        exact={route.exact}
-                                        component={route.component} />
-                                }
-                            })}
+                                        element={
+                                            <PrivateRoute>
+                                                <Component />
+                                            </PrivateRoute>
+                                        } 
+                                    />;
+                                })}
+                            </Routes>
 
-                            {/* <PrivateRoute
-                            // key={index}
-                            path="/todos"
-                            exact
-                            component={<Todo />} /> */}
+                        </div>
 
-                        </Switch>
+                        <Footer />
 
                     </div>
 
-                    <Footer />
-
-                </div>
-
-            </ThemeProvider>
-
+                </ThemeProvider>
+            </StyledEngineProvider>
         </Router>
-    )
+    );
 }
 
 export default App;

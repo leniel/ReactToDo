@@ -1,9 +1,9 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { Auth0Provider } from './auth/Auth'
+import { Auth0Provider } from './auth/Auth';
 import config from "./auth/auth_config.json";
 import history from "./utils/history";
 
@@ -17,10 +17,10 @@ const onRedirectCallback = appState =>
     );
 };
 
-// console.log(config.domain)
-// console.log(config.clientId)
+const container = document.getElementById('root');
+const root = createRoot(container);
 
-ReactDOM.render(
+root.render(
     <Auth0Provider
         domain={config.domain}
         client_id={config.clientId}
@@ -30,8 +30,8 @@ ReactDOM.render(
         audience={config.audience}
         scope={config.scope}>
         <App />
-    </Auth0Provider>,
-    document.getElementById('root'));
+    </Auth0Provider>
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
