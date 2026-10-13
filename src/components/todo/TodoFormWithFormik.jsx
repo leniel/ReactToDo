@@ -1,38 +1,32 @@
-import React, { useEffect } from "react";
+import { useEffect, useRef } from 'react';
 import * as Yup from 'yup';
 import { Button, MenuItem, LinearProgress, TextField } from '@mui/material';
 import { Form, Field, withFormik } from 'formik';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import { priority } from '../constants';
 
 const TodoForm = props =>
 {
-    let input = null;
+    const inputRef = useRef(null);
 
     useEffect(() =>
     {
-        console.log('rendered!');
-
-        if (input)
-        {
-            input.focus();
-        }
+        inputRef.current?.focus();
 
     }, [props.todo]);
 
-    const fieldSize = 12;
-
-    const { dirty, isValid, resetTodo, handleChange, values, errors, touched, submitForm, isSubmitting, setFieldValue } = props;
+    const { dirty, isValid, resetTodo, handleChange, values, errors, submitForm, isSubmitting, setFieldValue } = props;
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Form>
-                <Grid container direction="column" justifyContent="flex-start" spacing={4}>
+                <Stack spacing={4}>
 
-                    <Grid item xl={fieldSize} md={fieldSize} sm={fieldSize} xs={fieldSize}>
+                    <Box>
                         <TextField
                             autoFocus
                             fullWidth
@@ -43,11 +37,11 @@ const TodoForm = props =>
                             helperText={errors.name ? errors.name : "What should be done?"}
                             error={Boolean(errors.name)}
                             value={values.name}
-                            inputRef={(i) => { input = i; }}
+                            inputRef={inputRef}
                         />
-                    </Grid>
+                    </Box>
 
-                    <Grid item xl={fieldSize} md={fieldSize} sm={fieldSize} xs={fieldSize}>
+                    <Box>
                         <Field
                             name="dueDate"
                             component={({ field, form }) => (
@@ -66,9 +60,9 @@ const TodoForm = props =>
                                 />
                             )}
                         />
-                    </Grid>
+                    </Box>
 
-                    <Grid item xl={fieldSize} md={fieldSize} sm={fieldSize} xs={fieldSize}>
+                    <Box>
                         <TextField
                             select
                             name="priority"
@@ -88,11 +82,11 @@ const TodoForm = props =>
                                 </MenuItem>
                             ))}
                         </TextField>
-                    </Grid>
+                    </Box>
 
                     {isSubmitting && <LinearProgress />}
 
-                    <Grid item xl={fieldSize} md={fieldSize} sm={fieldSize} xs={fieldSize} align="center">
+                    <Box sx={{ textAlign: 'center' }}>
                         <Button
                             variant="contained"
                             color="primary"
@@ -110,8 +104,8 @@ const TodoForm = props =>
                         >
                             Cancel
                         </Button>
-                    </Grid>
-                </Grid>
+                    </Box>
+                </Stack>
             </Form>
         </LocalizationProvider>
     );

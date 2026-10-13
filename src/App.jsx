@@ -1,4 +1,4 @@
-import React from 'react';
+import { Suspense } from 'react';
 import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -35,29 +35,31 @@ function App()
 
                         <div className="main">
 
-                            <Routes>
-                                {routes.map((route, index) =>
-                                {
-                                    const Component = route.component;
+                            <Suspense fallback={<LinearProgress className="progress" />}>
+                                <Routes>
+                                    {routes.map((route, index) =>
+                                    {
+                                        const Component = route.component;
 
-                                    if (!route.protected)
+                                        if (!route.protected)
+                                            return <Route
+                                                key={index}
+                                                path={route.path}
+                                                element={<Component />}
+                                            />;
+
                                         return <Route
                                             key={index}
                                             path={route.path}
-                                            element={<Component />}
+                                            element={
+                                                <PrivateRoute>
+                                                    <Component />
+                                                </PrivateRoute>
+                                            }
                                         />;
-                                    
-                                    return <Route
-                                        key={index}
-                                        path={route.path}
-                                        element={
-                                            <PrivateRoute>
-                                                <Component />
-                                            </PrivateRoute>
-                                        } 
-                                    />;
-                                })}
-                            </Routes>
+                                    })}
+                                </Routes>
+                            </Suspense>
 
                         </div>
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import { styled } from '@mui/material/styles';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import clsx from 'clsx';
 import { useTheme } from '@mui/material/styles';
 import Drawer from '@mui/material/Drawer';
@@ -15,10 +15,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import logo from '../logo.svg';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import { Link, Route, withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { routes } from './routes'
 import Icon from '@mui/material/Icon'
 import MenuItem from '@mui/material/MenuItem';
@@ -252,7 +253,9 @@ function PersistentDrawerLeft(props)
                                         to={'/profile'}>Profile</MenuItem>
                                     <MenuItem onClick={() => logout(
                                         {
-                                            returnTo: config.logoutRedirect
+                                            logoutParams: {
+                                                returnTo: config.logoutRedirect
+                                            }
                                         }
                                     )}>Sign Out</MenuItem>
                                 </>
@@ -283,13 +286,14 @@ function PersistentDrawerLeft(props)
                         if (route.drawer)
                         {
                             return (
-                                <ListItem button
-                                    key={route.text}
-                                    component={Link}
-                                    to={route.path}
-                                    onClick={handleDrawerClose}>
-                                    <Icon>{route.icon}</Icon>
-                                    <ListItemText primary={route.text} style={{ marginLeft: "7px" }} />
+                                <ListItem key={route.text} disablePadding>
+                                    <ListItemButton
+                                        component={Link}
+                                        to={route.path}
+                                        onClick={handleDrawerClose}>
+                                        <Icon>{route.icon}</Icon>
+                                        <ListItemText primary={route.text} style={{ marginLeft: "7px" }} />
+                                    </ListItemButton>
                                 </ListItem>)
                         }
                     })}

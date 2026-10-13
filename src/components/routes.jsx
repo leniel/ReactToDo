@@ -1,7 +1,9 @@
-import About from "./About";
-import Home from "./Home"
-import Todo from "./todo/Todo"
-import Profile from "./user/Profile"
+import { lazy } from 'react';
+
+const About = lazy(() => import('./About'));
+const Home = lazy(() => import('./Home'));
+const Todo = lazy(() => import('./todo/Todo'));
+const Profile = lazy(() => import('./user/Profile'));
 
 // We are going to use this route config in 2
 // spots: once for the sidebar and once in the main
