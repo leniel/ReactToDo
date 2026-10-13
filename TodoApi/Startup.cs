@@ -132,15 +132,14 @@ namespace TodoApi
                 c.RoutePrefix = string.Empty;
             });
 
-            app.UseCors(builder => builder
-                    .WithOrigins("*")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader());
-            //.AllowCredentials());
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(builder => builder
+                    .WithOrigins("http://localhost:3000")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
 
             app.UseAuthentication();
 

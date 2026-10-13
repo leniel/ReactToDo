@@ -69,7 +69,7 @@ class Todo extends Component
                 this.setState({ todos: todos });
 
                 toast.success("Todo saved.", {
-                    position: toast.POSITION.TOP_CENTER
+                    position: "top-center"
                 });
             }
         )
@@ -96,7 +96,7 @@ class Todo extends Component
                 });
 
                 toast.success("Todo edited.", {
-                    position: toast.POSITION.TOP_CENTER
+                    position: "top-center"
                 });
             }
         )
@@ -158,7 +158,7 @@ class Todo extends Component
                     }));
 
                     toast.success("Todo deleted.", {
-                        position: toast.POSITION.TOP_CENTER
+                        position: "top-center"
                     });
                 })
         })
@@ -186,7 +186,7 @@ class Todo extends Component
                     }));
 
                     toast.success("Todo(s) complete changed.", {
-                        position: toast.POSITION.TOP_CENTER
+                        position: "top-center"
                     });
                 })
         })
@@ -206,7 +206,7 @@ class Todo extends Component
         return (
             <Grid container justifyContent="flex-end" spacing={2} lg={12}>
                 <Grid item xs={12} lg={4} alignItems="center" style={{ marginTop: 16 }}>
-                    <Paper style={this.props.theme.Paper}>
+                    <Paper sx={{ px: 2 }}>
                         <EnhancedTodoForm
                             onSubmit={this.saveTodo}
                             todo={todo}
@@ -215,7 +215,7 @@ class Todo extends Component
                 </Grid>
                 {/* {console.log(todos)} */}
                 <Grid item xs={12} lg={6}>
-                    <Paper style={this.props.theme.Paper}>
+                    <Paper sx={{ px: 2 }}>
 
                         <EnhancedTable
                             todos={todosToShow}

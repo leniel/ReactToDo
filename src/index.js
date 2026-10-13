@@ -5,16 +5,15 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { Auth0Provider } from './auth/Auth';
 import config from "./auth/auth_config.json";
-import history from "./utils/history";
 
 // A function that routes the user to the right place after login
 const onRedirectCallback = appState =>
 {
-    history.push(
-        appState && appState.targetUrl
-            ? appState.targetUrl
-            : window.location.pathname
-    );
+    const targetUrl = appState && appState.targetUrl
+        ? appState.targetUrl
+        : "/";
+
+    window.history.replaceState({}, document.title, targetUrl);
 };
 
 const container = document.getElementById('root');
@@ -23,12 +22,14 @@ const root = createRoot(container);
 root.render(
     <Auth0Provider
         domain={config.domain}
-        client_id={config.clientId}
-        redirect_uri={config.callbackUrl}
+        clientId={config.clientId}
+        authorizationParams={{
+            redirect_uri: config.callbackUrl,
+            audience: config.audience,
+            scope: config.scope
+        }}
         onRedirectCallback={onRedirectCallback}
-        response_type={config.responseType}
-        audience={config.audience}
-        scope={config.scope}>
+    >
         <App />
     </Auth0Provider>
 );

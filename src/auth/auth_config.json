@@ -1,8 +1,8 @@
 {
-    "domain": "YourDevDomainHere.auth0.com",
-    "clientId": "YourClientIdHere",
-    "callbackUrl": "http://localhost:3000",
+    "domain": "dev-c8e8wu8m.auth0.com",
+    "clientId": "FTiqxb6hTeGnDkUt7NVz0ajEwSCHwsbF",
+    "callbackUrl": "http://localhost:3000/callback",
     "logoutRedirect": "http://localhost:3000",
     "audience": "todoapi",
-    "scope": "email read:todos"
+    "scope": "openid profile email read:todos"
 }

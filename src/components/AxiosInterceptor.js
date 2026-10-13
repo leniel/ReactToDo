@@ -35,7 +35,7 @@ ax.interceptors.request.use(async config =>
             <div>An error occurred. Please, contact the developer.<br />
                 Details: {error.message}
             </div>, {
-                position: toast.POSITION.TOP_CENTER
+                position: "top-center"
             });
 
     // Do something with request error
@@ -63,7 +63,7 @@ ax.interceptors.response.use(function (response)
             <div>An error occurred. Please, contact the developer.<br />
                 Details: {error.message}
             </div>, {
-            position: toast.POSITION.TOP_CENTER
+            position: "top-center"
         });
         
     // Any status codes that falls outside the range of 2xx cause this function to trigger
