@@ -12,3 +12,5 @@ export const priority = [
         label: "High"
     }
 ];
+
+export const categories = ['Work', 'Personal', 'Shopping', 'Health', 'Other'];

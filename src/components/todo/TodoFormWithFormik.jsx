@@ -7,7 +7,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import { priority } from '../constants';
+import { categories, priority } from '../constants';
 
 const TodoForm = props =>
 {
@@ -20,6 +20,13 @@ const TodoForm = props =>
     }, [props.todo]);
 
     const { dirty, isValid, resetTodo, handleChange, values, errors, submitForm, isSubmitting, setFieldValue } = props;
+
+    const setQuickDueDate = daysFromToday => {
+        const date = new Date();
+        date.setDate(date.getDate() + daysFromToday);
+        date.setHours(17, 0, 0, 0);
+        setFieldValue('dueDate', date.toISOString(), true);
+    };
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -56,10 +63,46 @@ const TodoForm = props =>
                                         }
                                     }}
                                     value={field.value ? new Date(field.value) : null}
-                                    onChange={date => setFieldValue("dueDate", date ? date.toISOString() : null)}
+                                    onChange={date => setFieldValue("dueDate", date && !Number.isNaN(date.getTime()) ? date.toISOString() : null)}
                                 />
                             )}
                         />
+                        <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: 'wrap' }}>
+                            <Button size="small" type="button" onClick={() => setQuickDueDate(0)}>Today</Button>
+                            <Button size="small" type="button" onClick={() => setQuickDueDate(1)}>Tomorrow</Button>
+                            <Button size="small" type="button" onClick={() => setFieldValue('dueDate', null, true)}>No due date</Button>
+                        </Stack>
+                    </Box>
+
+                    <Box>
+                        <TextField
+                            fullWidth
+                            multiline
+                            minRows={2}
+                            maxRows={5}
+                            name="description"
+                            label="Notes"
+                            value={values.description || ''}
+                            onChange={handleChange('description')}
+                            error={Boolean(errors.description)}
+                            helperText={errors.description || 'Optional details'}
+                        />
+                    </Box>
+
+                    <Box>
+                        <TextField
+                            select
+                            fullWidth
+                            name="category"
+                            label="Category"
+                            value={values.category || ''}
+                            onChange={handleChange('category')}
+                        >
+                            <MenuItem value="">No category</MenuItem>
+                            {categories.map(category => (
+                                <MenuItem key={category} value={category}>{category}</MenuItem>
+                            ))}
+                        </TextField>
                     </Box>
 
                     <Box>
@@ -115,7 +158,9 @@ export default TodoForm;
 
 let schema = Yup.object({
     name: Yup.string().max(30, 'Must be 30 characters or less').required('Required'),
-    dueDate: Yup.date().required('Required').typeError('Required'),
+    dueDate: Yup.date().nullable().typeError('Enter a valid due date'),
+    description: Yup.string().max(500, 'Must be 500 characters or less'),
+    category: Yup.string().max(50),
     priority: Yup.number().required('Required')
 });
 
@@ -123,7 +168,9 @@ export const EnhancedTodoForm = withFormik({
     mapPropsToValues: (props) => ({
         id: props.todo.id,
         name: props.todo.name,
+        description: props.todo.description || '',
         dueDate: props.todo.dueDate,
+        category: props.todo.category || '',
         user: props.todo.user,
         priority: props.todo.priority,
         resetTodo: props.resetTodo,

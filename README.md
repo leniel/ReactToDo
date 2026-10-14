@@ -7,9 +7,9 @@ A React single page application with an ASP.NET Core API. Users sign in with Aut
 - `src/index.jsx` starts React and configures the Auth0 provider.
 - `src/App.jsx` sets up the shared layout, theme, and page routing.
 - `src/components/routes.jsx` defines the pages. Route components load on demand, so the Todos page code is fetched when a user opens it.
-- `src/components/todo/` contains the todo screen, form validation, date picker, and sortable/searchable table.
+- `src/components/todo/` contains task status filters, categories, notes, due-date shortcuts, and the sortable/searchable table.
 - `src/service/TodoService.js` calls the API. `src/components/AxiosInterceptor.jsx` adds the Auth0 access token to API requests and displays request progress and errors.
-- `TodoApi/` is the ASP.NET Core 10 API. Entity Framework Core maps `TodoContext` to SQL Server; the controller handles todo operations and Auth0 policies protect user actions.
+- `TodoApi/` is the ASP.NET Core 10 API. Entity Framework Core maps `TodoContext` to SQL Server; migrations update the schema at startup, and Auth0 policies protect user actions.
 
 ## Technologies
 

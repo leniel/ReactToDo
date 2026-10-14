@@ -14,6 +14,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
+import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -27,9 +28,14 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import TextField from "@mui/material/TextField";
+import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import { format } from 'date-fns';
 import { priority } from '../constants';
 import EditIcon from '@mui/icons-material/Edit';
+import { getTodoDueStatus } from './todoUtils';
 
 const PREFIX = 'EnhancedTable';
 
@@ -103,9 +109,10 @@ function getSorting(order, orderBy)
 
 const headCells = [
     { id: 'name', string: true, disablePadding: false, align: 'left', label: 'Todo' },
+    { id: 'category', numeric: false, disablePadding: false, align: 'center', label: 'Category' },
     { id: 'dueDate', numeric: false, disablePadding: true, align: 'center', label: 'Due date' },
     { id: 'priority', numeric: true, disablePadding: false, align: 'right', label: 'Priority' },
-    { id: 'completed', numeric: false, disablePadding: false, align: 'right', label: 'Done' },
+    { id: 'completed', numeric: false, disablePadding: false, align: 'center', label: 'Status' },
     { id: 'edit', numeric: false, disablePadding: true, align: 'right', label: '' },
 ];
 
@@ -157,7 +164,7 @@ function EnhancedTableHead(props)
 
 const EnhancedTableToolbar = props =>
 {
-    let { numSelected, selected, setSelected, deleteTodo, completeTodo, searchTodo } = props;
+    let { numSelected, selected, setSelected, requestDelete, completeTodo, searchTodo } = props;
 
     return (
         <Toolbar sx={{
@@ -195,7 +202,7 @@ const EnhancedTableToolbar = props =>
                             aria-label="delete"
                             onClick={() =>
                             {
-                                deleteTodo(selected);
+                                requestDelete(selected);
                                 setSelected([]);
                             }}
                             size="large">
@@ -292,6 +299,16 @@ function EnhancedTable(props)
         setDense(event.target.checked);
     };
 
+    React.useEffect(() => {
+        setSelected([]);
+        setPage(0);
+    }, [props.statusFilter, props.categoryFilter, props.searchFilter]);
+
+    React.useEffect(() => {
+        const lastPage = Math.max(0, Math.ceil(props.todos.length / rowsPerPage) - 1);
+        setPage(currentPage => Math.min(currentPage, lastPage));
+    }, [props.todos.length, rowsPerPage]);
+
     const isSelected = id => selected.indexOf(id) !== -1;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, props.todos.length - page * rowsPerPage);
 
@@ -304,10 +321,44 @@ function EnhancedTable(props)
     return (
         <Root className={classes.root}>
             <Paper>
+                <Tabs
+                    value={props.statusFilter}
+                    onChange={(_, value) => props.onStatusFilterChange(value)}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    allowScrollButtonsMobile
+                    aria-label="Filter todos by status"
+                >
+                    {[
+                        ['all', 'All'],
+                        ['active', 'Active'],
+                        ['completed', 'Completed'],
+                        ['overdue', 'Overdue'],
+                        ['dueSoon', 'Due soon'],
+                    ].map(([value, label]) => (
+                        <Tab key={value} value={value} label={`${label} (${props.statusCounts[value]})`} />
+                    ))}
+                </Tabs>
+                <Stack direction="row" justifyContent="flex-end" sx={{ px: 2, py: 1 }}>
+                    <TextField
+                        select
+                        size="small"
+                        label="Category"
+                        value={props.categoryFilter}
+                        onChange={event => props.onCategoryFilterChange(event.target.value)}
+                        sx={{ minWidth: 170 }}
+                    >
+                        <MenuItem value="">All categories</MenuItem>
+                        {props.categories.map(category => (
+                            <MenuItem key={category} value={category}>{category}</MenuItem>
+                        ))}
+                        <MenuItem value="__uncategorized">No category</MenuItem>
+                    </TextField>
+                </Stack>
                 <EnhancedTableToolbar
                     numSelected={selected.length}
                     selected={selected}
-                    deleteTodo={props.deleteTodo}
+                    requestDelete={props.requestDelete}
                     completeTodo={props.completeTodo}
                     searchTodo={props.searchTodo}
                     setSelected={setSelected}
@@ -357,13 +408,34 @@ function EnhancedTable(props)
                                                 id={labelId}
                                                 scope="row"
                                                 padding="none"
-                                                sx={{ overflowWrap: 'anywhere' }}>{row.name}
+                                                sx={{ overflowWrap: 'anywhere' }}>
+                                                <Typography variant="body2" fontWeight={600}>{row.name}</Typography>
+                                                {row.description && (
+                                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', whiteSpace: 'pre-wrap' }}>
+                                                        {row.description}
+                                                    </Typography>
+                                                )}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {row.category
+                                                    ? <Chip label={row.category} size="small" variant="outlined" />
+                                                    : <Typography variant="body2" color="text.secondary">—</Typography>}
                                             </TableCell>
                                             <TableCell align="right">
-                                                {row.dueDate ? format(new Date(row.dueDate), 'MM/dd/yyyy h:mm a') : ''}
+                                                <Stack alignItems="flex-end" spacing={0.5}>
+                                                    <Typography variant="body2">
+                                                        {row.dueDate && !Number.isNaN(new Date(row.dueDate).getTime())
+                                                            ? format(new Date(row.dueDate), 'MM/dd/yyyy h:mm a')
+                                                            : 'No date'}
+                                                    </Typography>
+                                                    {getTodoDueStatus(row) === 'overdue' && <Chip label="Overdue" color="error" size="small" />}
+                                                    {getTodoDueStatus(row) === 'today' && <Chip label="Due today" color="warning" size="small" />}
+                                                </Stack>
                                             </TableCell>
                                             <TableCell align="right">{priority.map(p => p.value === row.priority ? p.label : null)}</TableCell>
-                                            <TableCell align="right">{row.completed ? "Yep" : "Nope"}</TableCell>
+                                            <TableCell align="center">
+                                                <Chip label={row.completed ? 'Completed' : 'Active'} color={row.completed ? 'success' : 'default'} size="small" variant={row.completed ? 'filled' : 'outlined'} />
+                                            </TableCell>
                                             <TableCell align="right">
                                                 <Tooltip title="Edit">
                                                     <span>
@@ -378,7 +450,7 @@ function EnhancedTable(props)
                                 })}
                             {emptyRows > 0 && (
                                 <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                                    <TableCell colSpan={6} />
+                                    <TableCell colSpan={7} />
                                 </TableRow>
                             )}
                         </TableBody>

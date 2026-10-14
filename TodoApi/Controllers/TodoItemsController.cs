@@ -81,9 +81,11 @@ namespace TodoApi.Controllers
             if (existingTodo == null) return NotFound();
 
             existingTodo.Name = todoItem.Name;
+            existingTodo.Description = todoItem.Description;
             existingTodo.Completed = todoItem.Completed;
             existingTodo.DueDate = todoItem.DueDate;
             existingTodo.Priority = todoItem.Priority;
+            existingTodo.Category = todoItem.Category;
 
             try
             {
@@ -111,8 +113,10 @@ namespace TodoApi.Controllers
             {
                 User = user,
                 Name = request.Name,
+                Description = request.Description,
                 DueDate = request.DueDate,
-                Priority = request.Priority
+                Priority = request.Priority,
+                Category = request.Category
             };
 
             _context.TodoItems.Add(todoItem);
