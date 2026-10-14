@@ -28,6 +28,9 @@ steps:
       customCommand: 'ci'
       verbose: false
 
+  - script: npm test
+    displayName: "Run frontend tests"
+
   - script: npm run build
     displayName: "Build React application"
 
@@ -46,6 +49,14 @@ steps:
     inputs:
       command: "restore"
       projects: "**/*.csproj"
+
+  - task: DotNetCoreCLI@2
+    displayName: "Run .NET API tests"
+    inputs:
+      command: "test"
+      projects: "TodoApi.Tests/TodoApi.Tests.csproj"
+      arguments: "--configuration $(buildConfiguration) --no-restore"
+      publishTestResults: true
 
   - template: templates/build.yml
     parameters:

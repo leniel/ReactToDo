@@ -7,13 +7,13 @@ steps:
     inputs:
       command: "build"
       arguments: "--no-restore --configuration ${{ parameters.buildConfiguration }}"
-      projects: "**/*.csproj"
+      projects: "TodoApi/TodoApi.csproj"
 
   - task: DotNetCoreCLI@2
     displayName: "Publish the project - ${{ parameters.buildConfiguration }}"
     inputs:
       command: "publish"
-      projects: "**/*.csproj"
+      projects: "TodoApi/TodoApi.csproj"
       publishWebProjects: false
       arguments: "--no-build --configuration ${{ parameters.buildConfiguration }} --output $(Build.ArtifactStagingDirectory)/${{ parameters.buildConfiguration }}"
       zipAfterPublish: true
