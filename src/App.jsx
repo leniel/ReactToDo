@@ -3,12 +3,9 @@ import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
-import { GlobalLoader } from './components/AxiosInterceptor'
 import { theme } from './theme'
 import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
 import { routes } from './components/routes'
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { useAuth0 } from './auth/Auth';
 import PrivateRoute from './auth/PrivateRoute';
 import { LinearProgress } from '@mui/material';
@@ -24,14 +21,9 @@ function App()
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={theme}>
 
-                    {/* Loading indicator */}
-                    <GlobalLoader />
-
                     <div className="App">
 
                         <Header />
-
-                        <ToastContainer />
 
                         <div className="main">
 

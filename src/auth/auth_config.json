@@ -4,5 +4,5 @@
     "callbackUrl": "http://localhost:3000/callback",
     "logoutRedirect": "http://localhost:3000",
     "audience": "todoapi",
-    "scope": "openid profile email read:todos"
+    "scope": "openid profile email read:todos add:todos edit:todos delete:todos"
 }

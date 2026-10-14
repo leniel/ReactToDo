@@ -1,6 +1,5 @@
 import React from 'react';
 import { styled } from '@mui/material/styles';
-import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, useTheme } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -38,7 +37,8 @@ const classes = {
     root: `${PREFIX}-root`,
     highlight: `${PREFIX}-highlight`,
     title: `${PREFIX}-title`,
-    multilineColor: `${PREFIX}-multilineColor`
+    multilineColor: `${PREFIX}-multilineColor`,
+    visuallyHidden: `${PREFIX}-visuallyHidden`
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -63,6 +63,17 @@ const Root = styled('div')(({ theme }) => ({
         paddingLeft: 10,
         width: 300,
         alignItems: "center"
+    },
+    [`& .${classes.visuallyHidden}`]: {
+        border: 0,
+        clip: 'rect(0 0 0 0)',
+        height: '1px',
+        margin: '-1px',
+        overflow: 'hidden',
+        padding: 0,
+        position: 'absolute',
+        whiteSpace: 'nowrap',
+        width: '1px'
     }
 }));
 
@@ -115,7 +126,7 @@ function EnhancedTableHead(props)
                         indeterminate={numSelected > 0 && numSelected < rowCount}
                         checked={rowCount > 0 && numSelected === rowCount}
                         onChange={onSelectAllClick}
-                        inputProps={{ 'aria-label': 'select all todos' }}
+                        slotProps={{ input: { 'aria-label': 'select all todos' } }}
                     />
                 </TableCell>
                 {headCells.map(headCell => (
@@ -143,15 +154,6 @@ function EnhancedTableHead(props)
         </TableHead>
     );
 }
-
-EnhancedTableHead.propTypes = {
-    numSelected: PropTypes.number.isRequired,
-    onRequestSort: PropTypes.func.isRequired,
-    onSelectAllClick: PropTypes.func.isRequired,
-    order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-    orderBy: PropTypes.string.isRequired,
-    rowCount: PropTypes.number.isRequired,
-};
 
 const EnhancedTableToolbar = props =>
 {
@@ -207,21 +209,19 @@ const EnhancedTableToolbar = props =>
                     label="Search todo"
                     color="primary"
                     onChange={(i) => { searchTodo(i.target.value); }}
-                    InputProps={{
-                        startAdornment: (
+                    slotProps={{
+                        input: {
+                            startAdornment: (
                             <InputAdornment position="start">
                                 <SearchIcon />
                             </InputAdornment>
-                        )
+                            )
+                        }
                     }}
                 />
             )}
         </Toolbar>
     );
-};
-
-EnhancedTableToolbar.propTypes = {
-    numSelected: PropTypes.number.isRequired,
 };
 
 function EnhancedTable(props)
@@ -349,7 +349,7 @@ function EnhancedTable(props)
                                             <TableCell padding="checkbox">
                                                 <Checkbox
                                                     checked={isItemSelected}
-                                                    inputProps={{ 'aria-labelledby': labelId }}
+                                                    slotProps={{ input: { 'aria-labelledby': labelId } }}
                                                 />
                                             </TableCell>
                                             <TableCell
@@ -357,7 +357,7 @@ function EnhancedTable(props)
                                                 id={labelId}
                                                 scope="row"
                                                 padding="none"
-                                                style={{ width: '100%' }}>{row.name}
+                                                sx={{ overflowWrap: 'anywhere' }}>{row.name}
                                             </TableCell>
                                             <TableCell align="right">
                                                 {row.dueDate ? format(new Date(row.dueDate), 'MM/dd/yyyy h:mm a') : ''}
@@ -461,12 +461,5 @@ function TablePaginationActions(props)
         </div>
     );
 }
-
-TablePaginationActions.propTypes = {
-    count: PropTypes.number.isRequired,
-    onPageChange: PropTypes.func.isRequired,
-    page: PropTypes.number.isRequired,
-    rowsPerPage: PropTypes.number.isRequired,
-};
 
 export default EnhancedTable;

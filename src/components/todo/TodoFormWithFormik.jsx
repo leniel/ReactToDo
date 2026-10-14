@@ -134,11 +134,10 @@ export const EnhancedTodoForm = withFormik({
     validateOnBlur: true,
     enableReinitialize: true,
     validationSchema: schema,
-    handleSubmit: (values, { props, resetForm }) =>
+    handleSubmit: async (values, { props, resetForm }) =>
     {
-        console.log('Submitting todo form...');
-        props.onSubmit(values);
-        resetForm();
+        const saved = await props.onSubmit(values);
+        if (saved) resetForm();
     },
     displayName: 'TodoForm',
 })(TodoForm);

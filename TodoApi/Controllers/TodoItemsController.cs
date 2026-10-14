@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,19 +25,21 @@ namespace TodoApi.Controllers
         [Authorize("read:todos", Roles="Reader")]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
-            // Custom claim passed through an Auth0 rule.
-            // More info: https://auth0.com/docs/rules
-            var user = ((ClaimsIdentity)HttpContext.User.Identity).
-            FindFirst(c => c.Type == "https://reacttodo.com/email").Value;
+            var user = GetCurrentUserEmail();
+            if (user == null) return Forbid();
 
             return await _context.TodoItems.Where(todo => todo.User == user).ToListAsync();
         }
 
         [HttpGet]
         [Route("Count")]
+        [Authorize("read:todos", Roles = "Reader")]
         public async Task<ActionResult<long>> GetTodoItemsCount()
         {
-            return await _context.TodoItems.LongCountAsync();
+            var user = GetCurrentUserEmail();
+            if (user == null) return Forbid();
+
+            return await _context.TodoItems.LongCountAsync(todo => todo.User == user);
         }
 
         // GET: api/TodoItems/5
@@ -46,7 +47,11 @@ namespace TodoApi.Controllers
         [Authorize("read:todos", Roles = "Reader")]
         public async Task<ActionResult<TodoItem>> GetTodoItem(long id)
         {
-            var todoItem = await _context.TodoItems.FindAsync(id);
+            var user = GetCurrentUserEmail();
+            if (user == null) return Forbid();
+
+            var todoItem = await _context.TodoItems
+                .FirstOrDefaultAsync(todo => todo.Id == id && todo.User == user);
 
             if (todoItem == null)
             {
@@ -68,7 +73,17 @@ namespace TodoApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(todoItem).State = EntityState.Modified;
+            var user = GetCurrentUserEmail();
+            if (user == null) return Forbid();
+
+            var existingTodo = await _context.TodoItems
+                .FirstOrDefaultAsync(todo => todo.Id == id && todo.User == user);
+            if (existingTodo == null) return NotFound();
+
+            existingTodo.Name = todoItem.Name;
+            existingTodo.Completed = todoItem.Completed;
+            existingTodo.DueDate = todoItem.DueDate;
+            existingTodo.Priority = todoItem.Priority;
 
             try
             {
@@ -76,14 +91,7 @@ namespace TodoApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TodoItemExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
@@ -94,8 +102,19 @@ namespace TodoApi.Controllers
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
         [Authorize("add:todos", Roles = "Creator")]
-        public async Task<ActionResult<TodoItem>> PostTodoItem([FromBody]TodoItem todoItem)
+        public async Task<ActionResult<TodoItem>> PostTodoItem([FromBody]CreateTodoItemRequest request)
         {
+            var user = GetCurrentUserEmail();
+            if (user == null) return Forbid();
+
+            var todoItem = new TodoItem
+            {
+                User = user,
+                Name = request.Name,
+                DueDate = request.DueDate,
+                Priority = request.Priority
+            };
+
             _context.TodoItems.Add(todoItem);
             await _context.SaveChangesAsync();
 
@@ -109,7 +128,11 @@ namespace TodoApi.Controllers
         [Authorize("delete:todos", Roles = "Deleter")]
         public async Task<ActionResult<TodoItem>> DeleteTodoItem(long id)
         {
-            var todoItem = await _context.TodoItems.FindAsync(id);
+            var user = GetCurrentUserEmail();
+            if (user == null) return Forbid();
+
+            var todoItem = await _context.TodoItems
+                .FirstOrDefaultAsync(todo => todo.Id == id && todo.User == user);
             if (todoItem == null)
             {
                 return NotFound();
@@ -121,9 +144,9 @@ namespace TodoApi.Controllers
             return todoItem;
         }
 
-        private bool TodoItemExists(long id)
+        private string GetCurrentUserEmail()
         {
-            return _context.TodoItems.Any(e => e.Id == id);
+            return User.FindFirst("https://reacttodo.com/email")?.Value;
         }
     }
 }

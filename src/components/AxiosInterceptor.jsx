@@ -17,8 +17,6 @@ ax.interceptors.request.use(async config =>
 
     let token = await getTokenSilently()
 
-    console.log('Token: ' + token)
-
     config.headers.Authorization = `Bearer ${token}`;
 
     return config;
@@ -27,14 +25,8 @@ ax.interceptors.request.use(async config =>
 {
     //debugger
 
-        let e = JSON.stringify(error, null, 3)
-
-        console.log(JSON.stringify(error))
-
         toast.error(
-            <div>An error occurred. Please, contact the developer.<br />
-                Details: {error.message}
-            </div>, {
+            'Could not send the request. Please try again.', {
                 position: "top-center"
             });
 
@@ -55,14 +47,8 @@ ax.interceptors.response.use(function (response)
 {
     //debugger
 
-        let e = JSON.stringify(error, null, 3)
-
-        console.log(JSON.stringify(error))
-
         toast.error(
-            <div>An error occurred. Please, contact the developer.<br />
-                Details: {error.message}
-            </div>, {
+            'The request failed. Please try again.', {
             position: "top-center"
         });
         
@@ -111,16 +97,13 @@ const useAxiosLoader = () =>
     useEffect(() =>
     {
         // add request interceptors
-        ax.interceptors.request.use(interceptors.request, interceptors.error);
+        const requestId = ax.interceptors.request.use(interceptors.request, interceptors.error);
         // add response interceptors
-        ax.interceptors.response.use(interceptors.response, interceptors.error);
+        const responseId = ax.interceptors.response.use(interceptors.response, interceptors.error);
         return () =>
         {
-            // remove all intercepts when done
-            ax.interceptors.request.eject(interceptors.request);
-            ax.interceptors.request.eject(interceptors.error);
-            ax.interceptors.response.eject(interceptors.response);
-            ax.interceptors.response.eject(interceptors.error);
+            ax.interceptors.request.eject(requestId);
+            ax.interceptors.response.eject(responseId);
         };
     }, [interceptors]);
 

@@ -1,68 +1,54 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# React To Do
 
-## Available Scripts
+A React single page application with an ASP.NET Core API. Users sign in with Auth0; the API stores each user's todos in SQL Server.
 
-In the project directory, you can run:
+## Main parts
 
-### `yarn start`
+- `src/index.jsx` starts React and configures the Auth0 provider.
+- `src/App.jsx` sets up the shared layout, theme, and page routing.
+- `src/components/routes.jsx` defines the pages. Route components load on demand, so the Todos page code is fetched when a user opens it.
+- `src/components/todo/` contains the todo screen, form validation, date picker, and sortable/searchable table.
+- `src/service/TodoService.js` calls the API. `src/components/AxiosInterceptor.jsx` adds the Auth0 access token to API requests and displays request progress and errors.
+- `TodoApi/` is the ASP.NET Core 10 API. Entity Framework Core maps `TodoContext` to SQL Server; the controller handles todo operations and Auth0 policies protect user actions.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Technologies
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+| Technology | Purpose |
+| --- | --- |
+| React 19 and React Router 7 | User interface and client-side pages |
+| Material UI 9 | Layout, controls, date picker, and visual theme |
+| MUI X Date Pickers 9 | Todo due date and time selection |
+| Auth0 SPA SDK | Browser sign-in and API access tokens |
+| Vite 8 | Frontend development server and production build |
+| Axios | HTTP requests from the browser to the API |
+| Formik and Yup | Todo form state and validation |
+| ASP.NET Core 10 | REST API and authentication/authorization |
+| Entity Framework Core 10 and SQL Server | Database access and persistence |
+| Vitest and Testing Library | Frontend component and behavior tests |
 
-### `yarn test`
+## Run locally
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Start the API from the `TodoApi` directory:
 
-### `yarn build`
+```powershell
+dotnet run --urls http://localhost:8888
+```
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Start the frontend from the repository root in a second terminal:
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+```powershell
+npm install
+npm run start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Open [http://localhost:3000](http://localhost:3000). The API's Swagger UI is at [http://localhost:8888](http://localhost:8888).
 
-### `yarn eject`
+The API connection string is named `TodoDatabase` and is configured in the API's application settings. The frontend Auth0 settings are in `src/auth/auth_config.json`; the API's Auth0 authority and audience are configured in its application settings. Set `VITE_API_BASE_URL` in a local `.env` file to change the API host (the default is `http://localhost:8888`). Keep credentials and other private configuration out of source control.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Tests and production build
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+```powershell
+npm test
+npm run test:watch
+npm run build
+```

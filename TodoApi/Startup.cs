@@ -85,11 +85,12 @@ namespace TodoApi
             {
                 foreach (var scope in ScopesWithRoles)
                 {
-                    options.AddPolicy(scope.Scope, policy => policy.Requirements.Add(new HasScopeRequirement(scope.Scope,
-            $"https://{Configuration["Auth0:Domain"]}/")));
-
                     options.AddPolicy(scope.Scope, policy =>
-                       policy.RequireRole(scope.Role));
+                    {
+                        policy.Requirements.Add(new HasScopeRequirement(scope.Scope,
+                            $"https://{Configuration["Auth0:Domain"]}/"));
+                        policy.RequireRole(scope.Role);
+                    });
                 }
             });
 
