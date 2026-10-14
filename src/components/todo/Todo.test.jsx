@@ -1,119 +1,134 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Todo from './Todo';
 
-const { api, getUser } = vi.hoisted(() => ({
-    api: {
-        getTodos: vi.fn(),
-        addTodo: vi.fn(),
-        editTodo: vi.fn(),
-        deleteTodo: vi.fn(),
-    },
-    getUser: vi.fn(),
+const { api, toast } = vi.hoisted(() => ({
+    api: { getTodos: vi.fn(), addTodo: vi.fn(), editTodo: vi.fn(), deleteTodo: vi.fn() },
+    toast: { success: vi.fn(), error: vi.fn(), info: vi.fn() },
 }));
 
-vi.mock('../../auth/Auth', () => ({ getUser }));
 vi.mock('../../service/TodoService', () => ({ default: api }));
-vi.mock('../AxiosInterceptor', () => ({
-    GlobalLoader: () => <div data-testid="global-loader" />,
-}));
-vi.mock('react-toastify', () => ({
-    ToastContainer: () => <div data-testid="toast-container" />,
-    toast: { success: vi.fn() },
-}));
+vi.mock('../AxiosInterceptor', () => ({ GlobalLoader: () => null }));
+vi.mock('react-toastify', () => ({ ToastContainer: () => null, toast }));
 vi.mock('./TodoFormWithFormik', () => ({
     EnhancedTodoForm: ({ onSubmit, todo }) => (
         <button onClick={() => onSubmit({
-            ...todo,
-            name: todo.id ? 'Edited todo' : 'New todo',
-            dueDate: '2026-10-13T12:00:00.000Z',
-            priority: 1,
-        })}>
-            {todo.id ? 'Save edit' : 'Add todo'}
-        </button>
+            ...todo, name: todo.id ? 'Edited todo' : 'New todo', description: 'Details',
+            dueDate: null, priority: 1, category: 'Work',
+        })}>{todo.id ? 'Save edit' : 'Add todo'}</button>
     ),
 }));
 vi.mock('./EnhancedTable', () => ({
-    default: ({ todos, searchTodo, loadTodo, deleteTodo }) => (
+    default: props => (
         <section>
-            <input aria-label="Search todos" onChange={event => searchTodo(event.target.value)} />
-            <ul>
-                {todos.map(todo => (
-                    <li key={todo.id}>
-                        <span>{todo.name}</span>
-                        <button onClick={() => loadTodo(todo.id)}>Edit {todo.name}</button>
-                        <button onClick={() => deleteTodo([todo.id])}>Delete {todo.name}</button>
-                    </li>
-                ))}
-            </ul>
+            <input aria-label="Search todos" value={props.searchFilter} onChange={e => props.searchTodo(e.target.value)} />
+            <select aria-label="Status" value={props.statusFilter} onChange={e => props.onStatusFilterChange(e.target.value)}>
+                {['all', 'active', 'completed', 'overdue', 'dueSoon'].map(status => <option key={status}>{status}</option>)}
+            </select>
+            <select aria-label="Category" value={props.categoryFilter} onChange={e => props.onCategoryFilterChange(e.target.value)}>
+                <option value="">All categories</option><option>Work</option><option value="__uncategorized">Uncategorized</option>
+            </select>
+            <output aria-label="Counts">{JSON.stringify(props.statusCounts)}</output>
+            <ul>{props.todos.map(todo => <li key={todo.id}>
+                <span>{todo.name}</span>
+                <button onClick={() => props.loadTodo(todo.id)}>Edit {todo.name}</button>
+                <button onClick={() => props.requestDelete([todo.id])}>Delete {todo.name}</button>
+            </li>)}</ul>
         </section>
     ),
 }));
 
+const todayDueDate = new Date();
+todayDueDate.setHours(17, 0, 0, 0);
+const yesterdayDueDate = new Date(todayDueDate);
+yesterdayDueDate.setDate(yesterdayDueDate.getDate() - 1);
 const existingTodos = [
-    { id: 1, name: 'Buy milk', dueDate: '2026-10-14T12:00:00.000Z', priority: 1 },
-    { id: 2, name: 'Write notes', dueDate: '2026-10-15T12:00:00.000Z', priority: 2 },
+    { id: 1, name: 'Overdue task', description: 'old detail', dueDate: yesterdayDueDate.toISOString(), priority: 1, category: 'Work', completed: false },
+    { id: 2, name: 'Today task', description: '', dueDate: todayDueDate.toISOString(), priority: 2, category: '', completed: false },
+    { id: 3, name: 'Completed task', description: '', dueDate: null, priority: 0, category: 'Work', completed: true },
 ];
 
 beforeEach(() => {
+    vi.useRealTimers();
     vi.clearAllMocks();
-    getUser.mockResolvedValue({ email: 'leniel@example.com' });
     api.getTodos.mockResolvedValue({ data: existingTodos });
-    api.addTodo.mockImplementation(async todo => ({ data: { ...todo, id: 3 } }));
+    api.addTodo.mockImplementation(async item => ({ data: { ...item, id: 4 } }));
     api.editTodo.mockResolvedValue({});
-    api.deleteTodo.mockImplementation(async id => ({ data: { id } }));
+    api.deleteTodo.mockResolvedValue({});
 });
 
-test('loads the signed-in user and their todos', async () => {
+test('loads todos and provides status counts', async () => {
     render(<Todo />);
-
-    expect(await screen.findByText('Buy milk')).toBeInTheDocument();
-    expect(screen.getByText('Write notes')).toBeInTheDocument();
-    expect(getUser).toHaveBeenCalledOnce();
+    expect(await screen.findByText('Overdue task')).toBeInTheDocument();
     expect(api.getTodos).toHaveBeenCalledOnce();
+    expect(screen.getByLabelText('Counts')).toHaveTextContent('"all":3');
+    expect(screen.getByLabelText('Counts')).toHaveTextContent('"overdue":1');
+    expect(screen.getByLabelText('Counts')).toHaveTextContent('"dueSoon":1');
 });
 
-test('filters the visible todos by name', async () => {
+test('filters by status, category, and searchable task details', async () => {
     const user = userEvent.setup();
     render(<Todo />);
-    await screen.findByText('Buy milk');
-
-    await user.type(screen.getByRole('textbox', { name: 'Search todos' }), 'notes');
-
-    expect(screen.getByText('Write notes')).toBeInTheDocument();
-    expect(screen.queryByText('Buy milk')).not.toBeInTheDocument();
+    await screen.findByText('Overdue task');
+    await user.selectOptions(screen.getByLabelText('Status'), 'completed');
+    expect(screen.getByText('Completed task')).toBeInTheDocument();
+    expect(screen.queryByText('Today task')).not.toBeInTheDocument();
+    await user.selectOptions(screen.getByLabelText('Status'), 'all');
+    await user.selectOptions(screen.getByLabelText('Category'), 'Work');
+    expect(screen.queryByText('Today task')).not.toBeInTheDocument();
+    await user.selectOptions(screen.getByLabelText('Category'), '');
+    await user.type(screen.getByRole('textbox', { name: 'Search todos' }), 'old detail');
+    expect(screen.getByText('Overdue task')).toBeInTheDocument();
+    expect(screen.queryByText('Completed task')).not.toBeInTheDocument();
 });
 
-test('creates a todo for the signed-in user and adds it to the list', async () => {
+test('creates and edits todos with notes and category without sending a user field', async () => {
     const user = userEvent.setup();
     render(<Todo />);
-    await screen.findByText('Buy milk');
-
+    await screen.findByText('Overdue task');
     await user.click(screen.getByRole('button', { name: 'Add todo' }));
-
     await waitFor(() => expect(api.addTodo).toHaveBeenCalledWith(expect.objectContaining({
-        name: 'New todo',
-        user: 'leniel@example.com',
+        name: 'New todo', description: 'Details', category: 'Work', dueDate: null,
     })));
+    expect(api.addTodo.mock.calls[0][0]).not.toHaveProperty('user');
     expect(await screen.findByText('New todo')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Edit Overdue task' }));
+    await user.click(screen.getByRole('button', { name: 'Save edit' }));
+    await waitFor(() => expect(api.editTodo).toHaveBeenCalledWith(expect.objectContaining({ id: 1, description: 'Details', category: 'Work' })));
 });
 
-test('edits and deletes todos through the table actions', async () => {
+test('confirms deletion and lets the user undo before the delay expires', async () => {
     const user = userEvent.setup();
     render(<Todo />);
-    await screen.findByText('Buy milk');
+    await screen.findByText('Overdue task');
+    await user.click(screen.getByRole('button', { name: 'Delete Overdue task' }));
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText(/You can undo this for 5 seconds/)).toBeInTheDocument();
+    await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByText('Overdue task')).toBeInTheDocument();
+    expect(api.deleteTodo).not.toHaveBeenCalled();
 
-    await user.click(screen.getByRole('button', { name: 'Edit Buy milk' }));
-    await user.click(screen.getByRole('button', { name: 'Save edit' }));
-
-    await waitFor(() => expect(api.editTodo).toHaveBeenCalledWith(expect.objectContaining({
-        id: 1,
-        name: 'Edited todo',
-    })));
-    expect(await screen.findByText('Edited todo')).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: 'Delete Edited todo' }));
-
-    await waitFor(() => expect(screen.queryByText('Edited todo')).not.toBeInTheDocument());
-    expect(api.deleteTodo).toHaveBeenCalledWith(1);
+    await user.click(screen.getByRole('button', { name: 'Delete Overdue task' }));
+    await user.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.queryByText('Overdue task')).not.toBeInTheDocument();
+    await user.click(await screen.findByRole('button', { name: 'Undo' }));
+    expect(screen.getByText('Overdue task')).toBeInTheDocument();
+    expect(api.deleteTodo).not.toHaveBeenCalled();
 });
+
+test('deletes after the undo window and restores the task when the API fails', async () => {
+    const user = userEvent.setup();
+    render(<Todo />);
+    await screen.findByText('Overdue task');
+    await user.click(screen.getByRole('button', { name: 'Delete Overdue task' }));
+    await user.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    api.deleteTodo.mockRejectedValueOnce(new Error('network error'));
+    await act(async () => { await new Promise(resolve => setTimeout(resolve, 5100)); });
+    await waitFor(() => expect(api.deleteTodo).toHaveBeenCalledWith(1));
+    expect(await screen.findByText('Overdue task')).toBeInTheDocument();
+    expect(toast.error).toHaveBeenCalled();
+}, 10000);

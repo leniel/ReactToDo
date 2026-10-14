@@ -102,7 +102,10 @@ namespace TodoApi
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, TodoContext context)
         {
             // Make sure the database gets created...
-            context.Database.Migrate();
+            if (env.IsEnvironment("Testing"))
+                context.Database.EnsureCreated();
+            else
+                context.Database.Migrate();
 
             if (env.IsDevelopment())
             {
