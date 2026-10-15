@@ -50,6 +50,8 @@ The API connection string is named `TodoDatabase` and is configured in the API's
 
 The Azure DevOps pipeline builds the React app, copies it into the .NET app's `wwwroot`, publishes the .NET 10 API, and deploys the combined app to a Linux Azure App Service. The app serves the React site and API from the same origin.
 
+The deployed site's footer displays the Azure DevOps build number and short source commit hash. Hover over the badge to see the build ID and full commit hash, then compare the hash with the latest commit to confirm which code is running.
+
 The pipeline configures `ConnectionStrings__TodoDatabase`, `Auth0__Domain`, and `Auth0__Audience` as App Service settings. In Azure, the database connection uses the App Service's system-assigned managed identity; grant that identity access to the target Azure SQL database. EF Core migrations run when the API starts. The pipeline's Azure Resource Manager service connection name and App Service target are configured in `azure-pipelines.yml`.
 
 For Auth0, add the deployed site's `/callback` URL to Allowed Callback URLs, and its origin to Allowed Logout URLs and Allowed Web Origins. The localhost entries are still needed for local development.

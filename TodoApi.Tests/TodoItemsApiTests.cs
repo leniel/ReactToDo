@@ -21,6 +21,7 @@ public class TodoItemsApiTests
     {
         using var factory = new TodoApiFactory();
         using var client = factory.CreateClient();
+        var requestStartedAt = DateTimeOffset.UtcNow;
         var response = await client.PostAsJsonAsync("/api/TodoItems", new
         {
             name = "Plan release",
@@ -38,6 +39,10 @@ public class TodoItemsApiTests
         Assert.Equal("Check migration and release notes", created.Description);
         Assert.Equal("Work", created.Category);
         Assert.Null(created.DueDate);
+        Assert.NotNull(created.CreatedOn);
+        Assert.InRange(created.CreatedOn.Value, requestStartedAt, DateTimeOffset.UtcNow);
+        Assert.Equal(TimeSpan.Zero, created.CreatedOn.Value.Offset);
+        Assert.Null(created.DeletedOn);
 
         using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<TodoContext>();
@@ -82,7 +87,17 @@ public class TodoItemsApiTests
         Assert.Equal(1, await owner.GetFromJsonAsync<long>("/api/TodoItems/Count"));
 
         Assert.Equal(HttpStatusCode.OK, (await owner.DeleteAsync($"/api/TodoItems/{id}")).StatusCode);
+        var remainingTodos = await owner.GetFromJsonAsync<List<TodoItem>>("/api/TodoItems");
+        Assert.NotNull(remainingTodos);
+        Assert.Empty(remainingTodos);
+        Assert.Equal(HttpStatusCode.NotFound, (await owner.GetAsync($"/api/TodoItems/{id}")).StatusCode);
         Assert.Equal(0, await owner.GetFromJsonAsync<long>("/api/TodoItems/Count"));
+
+        using var scope = factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<TodoContext>();
+        var softDeleted = await db.TodoItems.IgnoreQueryFilters().SingleAsync(todo => todo.Id == id);
+        Assert.NotNull(softDeleted.DeletedOn);
+        Assert.Equal(TimeSpan.Zero, softDeleted.DeletedOn.Value.Offset);
     }
 
     [Theory]
