@@ -36,6 +36,9 @@ namespace TodoApi.Migrations
                     b.Property<bool>("Completed")
                         .HasColumnType("bit");
 
+                    b.Property<DateTimeOffset?>("CreatedOn")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 

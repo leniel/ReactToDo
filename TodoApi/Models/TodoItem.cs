@@ -19,6 +19,8 @@ namespace TodoApi.Models
 
         public DateTime? DueDate { get; set; }
 
+        public DateTimeOffset? CreatedOn { get; set; }
+
         public string Category { get; set; }
 
         [Required]
