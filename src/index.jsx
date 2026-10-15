@@ -23,7 +23,7 @@ root.render(
         domain={config.domain}
         clientId={config.clientId}
         authorizationParams={{
-            redirect_uri: config.callbackUrl,
+            redirect_uri: `${window.location.origin}/callback`,
             audience: config.audience,
             scope: config.scope
         }}

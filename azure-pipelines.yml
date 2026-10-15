@@ -13,7 +13,6 @@ pool:
 
 variables:
   buildConfiguration: "Release"
-  wwwrootDir: 'public'
 
 steps:
   - task: NodeTool@0
@@ -34,15 +33,19 @@ steps:
   - script: npm run build
     displayName: "Build React application"
 
+  - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > build/buildinfo.txt'
+    displayName: "Write build info"
+
+  - script: |
+      mkdir -p TodoApi/wwwroot
+      cp -a build/. TodoApi/wwwroot/
+    displayName: "Include React build in .NET app"
+
   - task: UseDotNet@2
     displayName: "Use .NET SDK 10"
     inputs:
       packageType: "sdk"
       version: "10.x"
-
-  - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
-    displayName: "Write build info"
-    workingDirectory: $(wwwrootDir)
 
   - task: DotNetCoreCLI@2
     displayName: "Restore project dependencies"
@@ -65,6 +68,28 @@ steps:
   - template: templates/build.yml
     parameters:
       buildConfiguration: 'Release'
+
+  - task: AzureAppServiceSettings@1
+    displayName: "Configure App Service settings"
+    inputs:
+      azureSubscription: "AzureRM-todo-rg-todo-dev"
+      appName: "todo"
+      resourceGroupName: "rg-todo-dev"
+      appSettings: |
+        [
+          {"name":"ConnectionStrings__TodoDatabase","value":"Server=tcp:todos.database.windows.net,1433;Initial Catalog=todos-db-free;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Managed Identity","slotSetting":false},
+          {"name":"Auth0__Domain","value":"dev-c8e8wu8m.auth0.com","slotSetting":false},
+          {"name":"Auth0__Audience","value":"todoapi","slotSetting":false}
+        ]
+
+  - task: AzureWebApp@1
+    displayName: "Deploy React and .NET app to Azure App Service"
+    inputs:
+      azureSubscription: "AzureRM-todo-rg-todo-dev"
+      appType: "webAppLinux"
+      appName: "todo"
+      package: "$(Build.ArtifactStagingDirectory)/Release/*.zip"
+      runtimeStack: "DOTNETCORE|10.0"
 
   - task: PublishBuildArtifacts@1
     displayName: "Publish Artifact: drop"

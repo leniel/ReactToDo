@@ -26,7 +26,6 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import Avatar from '@mui/material/Avatar';
 import { useAuth0 } from '../auth/Auth';
-import config from "../auth/auth_config.json";
 
 const PREFIX = 'PersistentDrawerLeft';
 
@@ -254,7 +253,7 @@ function PersistentDrawerLeft(props)
                                     <MenuItem onClick={() => logout(
                                         {
                                             logoutParams: {
-                                                returnTo: config.logoutRedirect
+                                                returnTo: window.location.origin
                                             }
                                         }
                                     )}>Sign Out</MenuItem>
