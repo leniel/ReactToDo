@@ -144,7 +144,7 @@ namespace TodoApi.Controllers
                 return NotFound();
             }
 
-            _context.TodoItems.Remove(todoItem);
+            todoItem.DeletedOn = DateTimeOffset.UtcNow;
             await _context.SaveChangesAsync();
 
             return todoItem;

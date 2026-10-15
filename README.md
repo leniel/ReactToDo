@@ -10,6 +10,7 @@ A React single page application with an ASP.NET Core API. Users sign in with Aut
 - `src/components/todo/` contains task status filters, categories, notes, due-date shortcuts, and the sortable/searchable table.
 - `src/service/TodoService.js` calls the API. `src/components/AxiosInterceptor.jsx` adds the Auth0 access token to API requests and displays request progress and errors.
 - `TodoApi/` is the ASP.NET Core 10 API. Entity Framework Core maps `TodoContext` to SQL Server; migrations update the schema at startup, and Auth0 policies protect user actions.
+- Todo creation timestamps are assigned by the API in UTC. Soft-deleted todos remain in the database with a `DeletedOn` timestamp and are filtered out of normal queries.
 
 ## Technologies
 
@@ -41,9 +42,19 @@ npm install
 npm run start
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The API's Swagger UI is at [http://localhost:8888](http://localhost:8888).
+Open [http://localhost:3000](http://localhost:3000). The API's Swagger UI is at [http://localhost:8888/swagger](http://localhost:8888/swagger).
 
 The API connection string is named `TodoDatabase` and is configured in the API's application settings. The frontend Auth0 settings are in `src/auth/auth_config.json`; the API's Auth0 authority and audience are configured in its application settings. Set `VITE_API_BASE_URL` in a local `.env` file to change the API host (the default is `http://localhost:8888`). Keep credentials and other private configuration out of source control.
+
+## Azure deployment
+
+The Azure DevOps pipeline builds the React app, copies it into the .NET app's `wwwroot`, publishes the .NET 10 API, and deploys the combined app to a Linux Azure App Service. The app serves the React site and API from the same origin.
+
+The pipeline configures `ConnectionStrings__TodoDatabase`, `Auth0__Domain`, and `Auth0__Audience` as App Service settings. In Azure, the database connection uses the App Service's system-assigned managed identity; grant that identity access to the target Azure SQL database. EF Core migrations run when the API starts. The pipeline's Azure Resource Manager service connection name and App Service target are configured in `azure-pipelines.yml`.
+
+For Auth0, add the deployed site's `/callback` URL to Allowed Callback URLs, and its origin to Allowed Logout URLs and Allowed Web Origins. The localhost entries are still needed for local development.
+
+Existing database rows have no recoverable creation timestamp, so `CreatedOn` is null for those rows. New rows receive a UTC timestamp. `DeletedOn` is null for active rows; a timestamp marks a soft-deleted row. Normal API queries exclude soft-deleted rows. There is no restore endpoint yet.
 
 ## Tests and production build
 
@@ -51,4 +62,5 @@ The API connection string is named `TodoDatabase` and is configured in the API's
 npm test
 npm run test:watch
 npm run build
+dotnet test TodoApi.Tests/TodoApi.Tests.csproj
 ```

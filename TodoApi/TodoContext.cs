@@ -10,5 +10,11 @@ namespace TodoApi.Models
         }
 
         public DbSet<TodoItem> TodoItems { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<TodoItem>()
+                .HasQueryFilter(todo => todo.DeletedOn == null);
+        }
     }
 }

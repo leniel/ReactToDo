@@ -21,6 +21,8 @@ namespace TodoApi.Models
 
         public DateTimeOffset? CreatedOn { get; set; }
 
+        public DateTimeOffset? DeletedOn { get; set; }
+
         public string Category { get; set; }
 
         [Required]
